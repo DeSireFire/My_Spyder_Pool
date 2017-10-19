@@ -1,0 +1,13 @@
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+print('nyanyanyanya')
+
