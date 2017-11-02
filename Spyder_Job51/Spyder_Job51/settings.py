@@ -96,6 +96,6 @@ HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 #链接mongodb进行存储！
 MONGODBHOST='127.0.0.1'
 MONGODBPORT=27017
-MONGODBUSER='ruanqing'
-MONGODBPASS='123qwe'
+MONGODBUSER=''
+MONGODBPASS=''
 MONGODDATABASE='job51'
