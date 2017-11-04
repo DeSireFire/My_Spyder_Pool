@@ -1,5 +1,6 @@
 Job_Keyword = ['python','java']
-Address_Keyword = ['北京','上海','广州']
+# Address_Keyword = ['北京','上海','广州','成都','深圳','杭州','苏州','南宁','重庆','武汉','天津']
+Address_Keyword = ['北京','上海','广州','成都','深圳']
 Company_Keyword = ["京东","百度","阿里巴巴","腾讯","新浪","搜狐","网易","金山","搜狗","暴风","优酷"]
 
 UserAgents = [

@@ -12,7 +12,6 @@ class LiepinRecruitmenSpider(RedisSpider):
     allowed_domains = ['liepin.com']
     start_urls = []
     temp_urls = []
-    # start_urls = ['http://liepin.com/']
     host = 'www.liepin.com'
     redis_key = "LiePin_Recruitmen:start_urls"
     #redis 要记得提前注册
@@ -58,7 +57,9 @@ class LiepinRecruitmenSpider(RedisSpider):
     else:
         print('未发发现Company_Keyword有需要搜索的职位关键词！执行下一步操作。')
     for url_redis in start_urls:
-        time.sleep(random.randint(5))
+        # Sleep_time = random.randint(0, 10)
+        # print('睡眠～%s秒' % Sleep_time)
+        # time.sleep(Sleep_time)
         os.system('redis-cli lpush LiePin_Recruitmen:start_urls %s'%url_redis)
     # print('URL池 start_urls %s 条，装填完毕！'%len(start_urls))
 

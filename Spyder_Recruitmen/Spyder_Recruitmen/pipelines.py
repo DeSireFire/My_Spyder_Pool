@@ -14,14 +14,14 @@ class SpyderRecruitmenPipeline(object):
     database = settings['MONGODDATABASE']
     conn = pymongo.MongoClient(host=host, port=port)
 
-    def getNoHtmlBody(var):
-        body = None
-        try:
-            dr = re.compile(r'<[^>]+>', re.S)
-            body = dr.sub('', var)
-        except Exception as ex:
-            print(ex)
-        return body
+    # def getNoHtmlBody(var):
+    #     body = None
+    #     try:
+    #         dr = re.compile(r'<[^>]+>', re.S)
+    #         body = dr.sub('', var)
+    #     except Exception as ex:
+    #         print(ex)
+    #     return body
 
     def process_item(self, item, spider):
         table_name = str(spider.name)
