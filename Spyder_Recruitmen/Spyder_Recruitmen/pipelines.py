@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from scrapy.conf import settings
-import pymongo
+import pymongo,re
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
@@ -12,15 +12,16 @@ class SpyderRecruitmenPipeline(object):
     host = settings['MONGODBHOST']
     port = settings['MONGODBPORT']
     database = settings['MONGODDATABASE']
-    # RecruitmenWeb = 'RecruitmenWeb_Other'
     conn = pymongo.MongoClient(host=host, port=port)
-        # conn = pymongo.MongoClient(host=host, port=port)
-        # self.db = conn[database]['%s' % RecruitmenWeb]
-        # if len(RecruitmenWeb) != '':
-        #     self.db = conn[database]['%s'%RecruitmenWeb]
-        #     # self.db = conn[database]['LiePin_Recruitmen_table']
-        # else:
-        #     self.db = conn[database]['RecruitmenWeb_Other']
+
+    def getNoHtmlBody(var):
+        body = None
+        try:
+            dr = re.compile(r'<[^>]+>', re.S)
+            body = dr.sub('', var)
+        except Exception as ex:
+            print(ex)
+        return body
 
     def process_item(self, item, spider):
         table_name = str(spider.name)

@@ -1,0 +1,11 @@
+Cache-Control: no-cache
+Content-Encoding: gzip
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Vary: Accept-Encoding
+Content-Type: text/html;charset=UTF-8
+Pragma: no-cache
+Content-Language: en
+Date: Sat, 04 Nov 2017 03:24:06 GMT
+Set-Cookie: abtest=0; Domain=.liepin.com; Expires=Sun, 05-Nov-2017 03:24:06 GMT; Path=/
+Set-Cookie: JSESSIONID=AE34EA9460F851BE15F74BDCA72C9B6B; Path=/; HttpOnly
+P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"

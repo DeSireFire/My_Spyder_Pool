@@ -1,0 +1,5 @@
+Accept-Encoding: gzip,deflate
+Cookie: JSESSIONID=0B92A7A9600A94EAB60FC2B13EB642E1; abtest=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en
+User-Agent: Scrapy/1.4.0 (+http://scrapy.org)

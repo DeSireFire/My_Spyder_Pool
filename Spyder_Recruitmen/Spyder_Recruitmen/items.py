@@ -22,11 +22,3 @@ class SpyderRecruitmenItem(scrapy.Item):
     companyInfo = scrapy.Field()
     RecruitmenWeb = scrapy.Field() #区分招聘信息的来源
 
-    # def getNoHtmlBody(self.content):
-    #     body = None
-    #     try:
-    #         dr = re.compile(r'<[^>]+>', re.S)
-    #         body = dr.sub('', content)
-    #     except Exception as ex:
-    #         print(ex)
-    #     return body

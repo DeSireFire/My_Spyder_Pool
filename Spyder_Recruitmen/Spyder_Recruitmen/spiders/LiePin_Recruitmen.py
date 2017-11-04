@@ -3,9 +3,9 @@ from scrapy import Request
 from scrapy_redis.spiders import RedisSpider
 from Spyder_Recruitmen.items import SpyderRecruitmenItem
 # from scrapy.selector import Selector
-from scrapy.conf import settings
+from random import choice
 from . import Value
-import re,os,time
+import re,os,time,random
 
 class LiepinRecruitmenSpider(RedisSpider):
     name = 'LiePin_Recruitmen'
@@ -20,7 +20,7 @@ class LiepinRecruitmenSpider(RedisSpider):
     if Value.Job_Keyword:
         for Job_Kw in Value.Job_Keyword:
             # URL拼接处理
-            url_information = "https://www.liepin.com/zhaopin/?key=%s"%Job_Kw
+            url_information = "https://www.liepin.com/zhaopin/?key=%s&d_pageSize=1000"%Job_Kw
             start_urls.append(url_information)
     else:
         print('未发发现Job_Keyword有需要搜索的职位关键词！执行下一步操作。')
@@ -41,7 +41,6 @@ class LiepinRecruitmenSpider(RedisSpider):
                 '南宁':"110020",
             }
             for i in range(0,len(start_urls)):
-                # url_information = "https://www.liepin.com/zhaopin/?key=%s" % Company_Kw
                 temp_urls.append( r'%s&dps=%s'%(start_urls[i],dps[Address_Kw]))
         start_urls = []
         start_urls = temp_urls
@@ -52,28 +51,32 @@ class LiepinRecruitmenSpider(RedisSpider):
         for Company_Kw in Value.Company_Keyword:
             # URL拼接处理
             for i in range(len(start_urls)):
-                temp_urls.append(r'%s&key=%s' % (start_urls[i], Company_Kw))
+                temp_urls.append(r'%s&key=%s&' % (start_urls[i], Company_Kw))
         start_urls = []
         start_urls = temp_urls
         temp_urls = []
     else:
         print('未发发现Company_Keyword有需要搜索的职位关键词！执行下一步操作。')
     for url_redis in start_urls:
+        time.sleep(random.randint(5))
         os.system('redis-cli lpush LiePin_Recruitmen:start_urls %s'%url_redis)
-        # time.sleep(3)
-    print('URL池 start_urls 装填完毕！')
+    # print('URL池 start_urls %s 条，装填完毕！'%len(start_urls))
 
 
 
     def start_requests(self):
         for url in self.start_urls:
-            yield Request(url=url, callback=self.parse,headers={'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"})
+            Sleep_time = random.randint(0,10)
+            print('睡眠～%s秒'%Sleep_time)
+            time.sleep(Sleep_time)
+            yield Request(url=url, callback=self.parse)
 
     def rep_handler(self, var):
         return var.replace('\n', '').replace('\t', '').replace('\r', '')
 
     def parse(self, response):
         body = self.rep_handler(response.body.decode('utf8'))
+        Url_Other = []
         info = re.findall(
             'class="job-info">(.*?)href="(.*?)"(.*?)_9\'\)">(.*?)</a>(.*?)warning">(.*?)</span>(.*?)"area">(.*?)</a>(.*?)edu">(.*?)</span>(.*?)</span>(.*?)title="(.*?)"',
             body)
@@ -86,8 +89,15 @@ class LiepinRecruitmenSpider(RedisSpider):
             items["pushDate"] = item[12]
             items["url"] = item[1]
             items['RecruitmenWeb'] = '%s_table'%self.name
+            if '//www.liepin.com' not in items["url"]:
+                print('发现特殊地址，修改为https://www.liepin.com%s'%items["url"])
 
-            yield Request(url=items["url"], callback=self.detail, meta={"item": items})
+                Url_Other = 'https://www.liepin.com%s'%items["url"]
+
+                os.system('redis-cli lpush LiePin_Recruitmen:start_urls %s'%Url_Other)
+                yield Request(url='https://www.liepin.com%s'%items["url"], callback=self.detail, meta={"item": items})
+            else:
+                yield Request(url=items["url"], callback=self.detail, meta={"item": items})
 
     def detail(self, response):
         items = response.meta["item"]
