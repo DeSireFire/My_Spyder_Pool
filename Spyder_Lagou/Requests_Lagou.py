@@ -27,6 +27,8 @@ def Company_Spyder(companyID):
         Lg_requests=Lg_Session.post(url=Lagou_url,data=Lg_Session_data)
         try:
             rec = json.loads(str(Lg_requests.content, encoding = "utf-8"))['content']
+            # rec = str(Lg_requests.content, encoding = "utf-8")
+            # print(rec)
                     # json.dumps(Lg_requests.content,ensure_ascii=False)
             for c in range(0,10):
                 time.sleep(5)
