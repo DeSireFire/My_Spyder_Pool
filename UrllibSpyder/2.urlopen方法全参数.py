@@ -11,4 +11,5 @@ cafile：CA证书文件名
 capath：CA证书文件的路径
 cadefault=False：已经废弃的参数，默认值是False
 context:指定是SSL设置，必须为ssl.SSLContext类型
+PS：该方法没有headers参数，没办法携带请求头来发送请求，容易被反扒
 '''
