@@ -8,8 +8,8 @@ aixinxi_login_url2 = "https://tu.aixinxi.net/index.php"
 # aixinxi_login_url = "http://httpbin.org/post"
 aixinxi_login_dirt = {
     "action":"login",
-    "username":"1025212779@qq.com",
-    "password":"RQgannimei233",
+    "username":"",
+    "password":"",
 }
 # 载入cookies处理器
 aixinxi_login_cookie = http.cookiejar.CookieJar()
