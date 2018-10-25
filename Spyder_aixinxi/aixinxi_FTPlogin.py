@@ -1,5 +1,5 @@
 #ftp演示，首先要在本机或远程服务器开启ftp功能
-import sys,os,ftplib,socket,hashlib,shutil
+import sys,os,ftplib,socket,hashlib
 print("=====================FTP客户端=====================");
 # print(ftp.cwd("test"))  # 设置FTP当前操作的路径
 # print(ftp.cwd(".."))  # 设置FTP当前操作的路径(返回上级)
@@ -13,11 +13,11 @@ print("=====================FTP客户端=====================");
 # print(ftp.pwd())  # 返回当前所在位置
 # ftp.nlst()                        # 获取目录下的文件
 
-
 HOST = ''  # FTP主机地址
-username = ''   # 用户名
-password = ''   # 密码
+username = ''  # 用户名
+password = ''  # 密码
 buffer_size = 8192  # 缓冲区大小
+
 
 # 连接登陆
 def connect():
@@ -148,18 +148,18 @@ def find(ftp,filename):
 def mkdir(ftp,dirpath):
     if find(ftp, dirpath):
         print("%s目录已存在！自行跳转到该目录！"%dirpath)
-        pwdinfo(ftp, dirpath) # 设置FTP当前操作的路径
+        pwdSkip(ftp, dirpath)       # 设置FTP当前操作的路径
     else:
         print("未发现%s同名文件夹！" % dirpath)
         try:
             ftp.mkd(dirpath)    # 新建远程目录
             print("创建新目录%s！并自行跳转到该目录！" % dirpath)
-            pwdinfo(ftp, dirpath)    # 设置FTP当前操作的路径
+            pwdSkip(ftp, dirpath)    # 设置FTP当前操作的路径
         except ftplib.error_perm:
             print("目录已经存在或无法创建")
 
 # 删除目录下文件
-def DeleteFile(ftp,filepath = "/233",file_name = None):
+def DeleteFile(ftp,filepath = "/",file_name = None):
     pwdSkip(ftp,filepath)   # 跳转到操作目录
     if find(ftp,file_name) and file_name != None:
         ftp.delete(file_name)   # 删除文件
@@ -202,7 +202,7 @@ def DeleteDir(ftp,dirpath,dir_name = None):
     else:
         print("%s 未找到，删除中止！" % dir_name)
 
-# 目录下的非空文件夹
+# 查询目录下的非空文件夹
 def listdir(ftp,fulllist):
     dir_list = []
     haveDir_list = []
@@ -242,44 +242,63 @@ def DeleteDirFiles(ftp,dirpath = "/"):
         DeleteDir(ftp, path)    #删除该目录下所有文件
     print("删除完毕!%s目录下已清空"%dirpath)
 
-def main():
-    ftp = connect()                  #连接登陆ftp
 
+# 主函数
+def main():
+    # 连接登陆ftp（必须的）
+    ftp = connect()
     try:
-        # dirpath = "test"    #文件夹名
-        # ftp.cwd(dirpath)
-        # mkdir(ftp,"test2")
-        # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
-        # ftp.cwd("/233/666/888/999")
-        # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
-        # DeleteFile(ftp, "/233/")
-        # DeleteDir(ftp, "/233/")
-        # TraversingIter(ftp)
-        # Traversing(ftp)
-        # upload(ftp,"D:\\workspace\\PythonSpace\\Spyder\\Spyder_aixinxi\\1.jpg")       #上传本地文件
-        # filepath = "018465277C419D288C652804D6B73926"  #上传文件名
-        # filepath = "1.jpg"  #上传文件名
-        # filepath = "DhzSUkJU0AA3b0M.png"  #上传文件名
-        # upload(ftp,filepath,fileNameMD5(filepath))
-        DeleteDirFiles(ftp)
+        # 以下是各种方法的使用示例
+
+        # 获取目录下文件或文件夹详细信息
+        dirInfo(ftp)
+
+        # 获取目录下文件或文件夹的列表信息，并清洗去除“. ..”
+        nlstListInfo(ftp)
+
+        # 获取当前路径
+        pwdinfo(ftp)
+
+        # 目录跳转
+        pwdSkip(ftp, "/")
+
+        # 判断文件与目录
+        file_name = "test"  # 需要判断的文件名或者是文件夹名
+        checkFileDir(ftp, file_name)
+
+        # 文件名加密并上传
+        filepath = "D:\\workspace\\PythonSpace\\Spyder\\RequestsSpyder\\1.jpg"  # 需要加密的文件名的绝对路径
+        file_name = fileNameMD5(filepath)   # 此函数，仅用于本地，一般结合上传文件方法使用
+        upload(ftp, filepath, file_name)    # 上文件
+
+        # 下载文件
+        dirPathName = "/"
+        pwdSkip(ftp, dirPathName)   # 跳转到FTP上的/目录，根据自己的需要修改
+        filename = "test"   # 需要从FTP上下载的文件名
+        download(ftp, filename)
+
+        # 查找是否存在指定文件或目录
+        filename = "test"
+        if find(ftp, filename):     # 此函数，一般结合其他方法使用,返回值为True&False
+            print("存在")
+        else:
+            print("不存在")
+
+        # 检查是否有存在指定目录并创建
+        dirpath = "test"        # 想要创建的文件夹名
+        mkdir(ftp, dirpath)     # 在FTP新建一个名为“test”的文件夹
+
+
+
+        # ....
+        # ....
+
     except ftplib.error_perm as e:
         print(e)
     finally:
+        # 退出ftp（必须的）
         disconnect(ftp)
 
-    # filename="test1.txt"
-    # ftp.rename("test.txt", filename) #文件改名
-    # if os.path.exists(filename):   #判断本地文件是否存在
-    #     os.unlink(filename)    #如果存在就删除
-    # download(ftp,filename)        #下载ftp文件
-    # listinfo(ftp)                   #打印目录下每个文件或文件夹的详细信息
-    # files = ftp.nlst()              #获取路径下文件或文件夹列表
-    # print(files)
-    #
-    #
-    # ftp.delete(filename)              #删除远程文件
-    # ftp.rmd("dir1")                  #删除远程目录
-    # ftp.quit()  #退出
 
 if __name__ == '__main__':
     main()
