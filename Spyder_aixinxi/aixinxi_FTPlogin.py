@@ -14,7 +14,10 @@ print("=====================FTP客户端=====================");
 # ftp.nlst()                        # 获取目录下的文件
 
 
-
+HOST = ''  # FTP主机地址
+username = ''   # 用户名
+password = ''   # 密码
+buffer_size = 8192  # 缓冲区大小
 
 # 连接登陆
 def connect():
@@ -29,14 +32,82 @@ def connect():
         print("FTP登陆失败，请检查主机号、用户名、密码是否正确")
         sys.exit(0)
 
+# 获取目录下文件或文件夹详细信息
+def dirInfo(ftp):
+    ftp.dir()
+
+# 获取目录下文件或文件夹的列表信息，并清洗去除“. ..”
+def nlstListInfo(ftp):
+    files_list = ftp.nlst()
+    return [file for file in files_list if file != "." and file !=".."]
+
 # 获取当前路径
 def pwdinfo(ftp):
     pwd_path = ftp.pwd()
     print("FTP当前路径:", pwd_path)
+    return ftp.pwd()
 
 # 中断并退出
 def disconnect(ftp):
     ftp.quit()  # FTP.close()：单方面的关闭掉连接。FTP.quit():发送QUIT命令给服务器并关闭掉连接
+
+# 目录跳转
+def pwdSkip(ftp,dirPathName):
+    """
+    跳转到指定目录
+    :param ftp: 调用connect()方法的变量
+    :param dirPathName: FTP服务器的绝对路径
+    :return:
+    """
+    try:
+        ftp.cwd(dirPathName)             # 重定向到指定路径
+    except ftplib.error_perm:
+        print('不可以进入目录："%s"' % dirPathName)
+    print("当前所在位置:%s" % ftp.pwd())  # 返回当前所在位置
+
+# 判断文件与目录
+def checkFileDir(ftp,file_name):
+    """
+    判断当前目录下的文件与文件夹
+    :param ftp: 实例化的FTP对象
+    :param file_name: 文件名/文件夹名
+    :return:返回字符串“File”为文件，“Dir”问文件夹，“Unknow”为无法识别
+    """
+    rec = ""
+    try:
+        rec = ftp.cwd(file_name)   # 需要判断的元素
+        ftp.cwd("..")   # 如果能通过路劲打开必为文件夹，在此返回上一级
+    except ftplib.error_perm as fe:
+        rec = fe # 不能通过路劲打开必为文件，抓取其错误信息
+    finally:
+        if "Not a directory" in str(rec):
+            return "File"
+        elif "Current directory is" in str(rec):
+            return "Dir"
+        else:
+            return "Unknow"
+
+# 文件名加密
+def fileNameMD5(filepath):
+    """
+    文件名加密MD5
+    :param filepath: 本地需要加密的文件绝对路径
+    :return: 返回加密后的文件名
+    """
+    file_name = os.path.split(filepath)[-1]     # 获取文件全名
+    encryption = hashlib.md5()      # 实例化MD5
+    try:
+        file_format = os.path.splitext(file_name)[-1]  # 截取文件格式
+        file_name_section = os.path.splitext(file_name)[0]
+    except IndexError as e:
+        print('%s 文件有误！未发现后缀格式！报错信息：%s' %(file_name,e))
+        return "无后缀格式的文件"
+    else:
+        encryption.update(file_name_section.encode('utf-8'))
+        newname = "zzuliacgn_" + encryption.hexdigest() + "." + file_format
+        print('MD5加密前为 ：' + file_name)
+        print('MD5加密后为 ：' + newname)
+        return newname
 
 # 上传文件
 def upload(ftp, filepath,file_name = None):
@@ -65,16 +136,6 @@ def download(ftp, filename):
         return False
     return True
 
-# 获取目录下文件或文件夹详细信息 [file for file in r_files if file != "." and file !=".."]
-def dirInfo(ftp):
-    ftp.dir()
-
-# 获取目录下文件或文件夹的列表信息，并清洗去除“. ..”
-def nlstListInfo(ftp):
-    files_list = ftp.nlst()
-    return [file for file in files_list if file != "." and file !=".."]
-
-
 # 查找是否存在指定文件或目录
 def find(ftp,filename):
     ftp_f_list = ftp.nlst()  # 获取目录下文件、文件夹列表
@@ -97,142 +158,114 @@ def mkdir(ftp,dirpath):
         except ftplib.error_perm:
             print("目录已经存在或无法创建")
 
-# 目录跳转
-def pwdinfo(ftp,dirPathName):
-    """
-    跳转到指定目录
-    :param ftp: 调用connect()方法的变量
-    :param dirPathName: FTP服务器的绝对路径
-    :return:
-    """
-    try:
-        ftp.cwd(dirPathName)             # 重定向到指定路径
-    except ftplib.error_perm:
-        print('不可以进入目录："%s"' % dirPathName)
-    print("当前所在位置:%s" % ftp.pwd())  # 返回当前所在位置
-
-# 文件名加密
-def fileNameMD5(filepath):
-    """
-    文件名加密MD5
-    :param filepath: 本地需要加密的文件绝对路径
-    :return: 返回加密后的文件名
-    """
-    file_name = os.path.split(filepath)[-1]     # 获取文件全名
-    encryption = hashlib.md5()      # 实例化MD5
-    try:
-        file_format = os.path.splitext(file_name)[-1]  # 截取文件格式
-        file_name_section = os.path.splitext(file_name)[0]
-    except IndexError as e:
-        print('%s 文件有误！未发现后缀格式！报错信息：%s' %(file_name,e))
-        return "无后缀格式的文件"
-    else:
-        encryption.update(file_name_section.encode('utf-8'))
-        newname = "zzuliacgn_" + encryption.hexdigest() + "." + file_format
-        print('MD5加密前为 ：' + file_name)
-        print('MD5加密后为 ：' + newname)
-        return newname
-
 # 删除目录下文件
 def DeleteFile(ftp,filepath = "/233",file_name = None):
-    pwdinfo(ftp,filepath)   # 跳转到操作目录
+    pwdSkip(ftp,filepath)   # 跳转到操作目录
     if find(ftp,file_name) and file_name != None:
         ftp.delete(file_name)   # 删除文件
         print("%s 已删除！"%file_name)
     elif file_name == None:
-        print("file_name:%s 将删除 %s 目录下所有文件（目录除外）！" % (file_name,ftp.pwd()))
-        filelist = ftp.nlst()   # 列出当前目录下的文件和文件夹列表并去掉前两个元素
-        # filelist = ftp.nlst()[2:]   # 列出当前目录下的文件和文件夹列表并去掉前两个元素
-        print(filelist)
+        # print("file_name:%s 将删除 %s 目录下所有文件（目录除外）！" % (file_name,ftp.pwd()))
+        filelist = nlstListInfo(ftp)
         for i in filelist:
-            if os.path.isfile(i):
+            if checkFileDir(ftp,i) == "File":
                 ftp.delete(i)  # 删除文件
                 print("%s 是文件，已删除！" % i)
-            else:
+            elif checkFileDir(ftp,i) == "Dir":
                 print("%s 是文件夹" % i)
+            else:
+                print("%s 无法识别，跳过" % i)
     else:
         print("%s 未找到，删除中止！" % file_name)
 
 # 删除目录下的文件夹
 def DeleteDir(ftp,dirpath,dir_name = None):
-    pwdinfo(ftp, dirpath)  # 跳转到操作目录
+    pwdSkip(ftp, dirpath)  # 跳转到操作目录
     if find(ftp,dir_name) and dir_name != None:
         ftp.delete(dir_name)   # 删除文件
         print("%s 已删除！"%dir_name)
     elif dir_name == None:
-        print("file_name:%s 将删除 %s 目录下所有文件夹（文件除外）！" % (dir_name,ftp.pwd()))
-        filelist = ftp.nlst()[2:]   # 列出当前目录下的文件和文件夹列表并去掉前两个元素
-        print(filelist)
+        # print("file_name:%s 将删除 %s 目录下所有文件夹（文件除外）！" % (dir_name,ftp.pwd()))
+        filelist = nlstListInfo(ftp)
         for i in filelist:
-            if os.path.isfile(i):
-                print("%s 是文件" % i)
-            else:
+            if checkFileDir(ftp,i) == "File":
+                print("%s 是文件，不与理会！" % i)
+            elif checkFileDir(ftp,i) == "Dir":
                 try:
                     ftp.rmd(i)  # 删除文件)  # 重定向到指定路径
                     print("%s 是文件夹，已删除！" % i)
                 except ftplib.error_perm as e:
                     print('无法删除 %s，文件夹里似乎还有东西！报错信息："%s"' %(i,e))
+            else:
+                print("%s 无法识别，跳过" % i)
+
     else:
         print("%s 未找到，删除中止！" % dir_name)
 
-# 遍历目录下所有文件和文件夹
-# def Traversing(ftp,path = "/233"):
-    # pwdinfo(ftp, path)
-    # files = ftp.nlst()[2:]  # 得到path目录下的所有文件名称
-    # print(files)
-    # files_temp = []
-    # for file in files:  # 遍历文件夹
-    #     print(file)
-    #     if os.path.isdir(path):
-    #         print("it's a directory")
-    #     elif os.path.isfile(path):
-    #         print("it's a normal file")
-    #     else:
-    #         print("it's a special file(socket,FIFO,device file)")
+# 目录下的非空文件夹
+def listdir(ftp,fulllist):
+    dir_list = []
+    haveDir_list = []
+    for file in fulllist:  # 遍历文件夹
+        if checkFileDir(ftp, file) == "Dir":  # 判断是否是文件夹，是文件夹才打开
+            dir_list.append(file)
+    for file in dir_list:  # 遍历文件夹
+        ftp.cwd(file)
+        if nlstListInfo(ftp) != []:  # 判断是否是文件夹，是文件夹才打开
+            haveDir_list.append(file)
+        ftp.cwd("..")
+    return haveDir_list
 
-        # if os.path.isfile(file):  # 判断是否是文件夹，不是文件夹才打开
-        #     print(file)
-        #     file_cwd = ftp.cwd(file)     # 打开文件
-        #     # f = open(path + "/" + file)     # 打开文件
-        #     iter_f = iter(file_cwd)    # 创建迭代器
-        #     str_temp = ""
-        #     for line in iter_f:  # 遍历文件，一行行遍历，读取文本
-        #         str_temp = str_temp + line
-        #     files_temp.append(str_temp)  # 每个文件的文本存到list中
-    # print(files_temp)  # 打印结果
+# 递归器
+def TraversingIter(ftp,path = "/"):
+    ftp.cwd(path)
+    haveDir_list = listdir(ftp, nlstListInfo(ftp))
+    if haveDir_list == []:
+        print("%s"%(ftp.pwd()))
+        return ftp.pwd()
+    it = iter(haveDir_list)
+    return TraversingIter(ftp,next(it))
 
-
-# 搜索（遍历）删除文件夹或文件
-def DeleteDirFiles(ftp,dirpath = "/",DirFiles_name = None):
+# 遍历删除文件夹或文件
+def DeleteDirFiles(ftp,dirpath = "/"):
     """
     搜索（遍历）删除文件夹或文件
     :param ftp: 调用connect()方法的变量
     :param dirpath:限定搜索的路径范围，默认值为“/”根目录
-    :param DirFiles_name:默认值为None,若为None,则递归删除参数dirpath目录下所有的文件和文件夹；若不为None,则递归寻找参数dirpath目录下名为DirFiles_name的文件或文件夹并删除！
     :return:
     """
-    pwdinfo(ftp, dirpath)
-    if DirFiles_name == None:
-        DeleteFile(ftp, dirpath)    #删除该目录下所有文件
-
+    path = ""
+    pwdSkip(ftp, dirpath)
+    while dirpath != path:
+        path = TraversingIter(ftp, dirpath)
+        DeleteFile(ftp, path)    #删除该目录下所有文件
+        DeleteDir(ftp, path)    #删除该目录下所有文件
+    print("删除完毕!%s目录下已清空"%dirpath)
 
 def main():
     ftp = connect()                  #连接登陆ftp
-    # dirpath = "test"    #文件夹名
-    # ftp.cwd(dirpath)
-    # mkdir(ftp,"test2")
-    # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
-    # ftp.cwd("/233/666/888/999")
-    # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
-    # DeleteFile(ftp, "/233/")
-    DeleteDir(ftp, "/233/")
-    # Traversing(ftp)
-    # upload(ftp,"D:\\workspace\\PythonSpace\\Spyder\\Spyder_aixinxi\\1.jpg")       #上传本地文件
-    # filepath = "018465277C419D288C652804D6B73926"  #上传文件名
-    # filepath = "1.jpg"  #上传文件名
-    # filepath = "DhzSUkJU0AA3b0M.png"  #上传文件名
-    # upload(ftp,filepath,fileNameMD5(filepath))
-    disconnect(ftp)
+
+    try:
+        # dirpath = "test"    #文件夹名
+        # ftp.cwd(dirpath)
+        # mkdir(ftp,"test2")
+        # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
+        # ftp.cwd("/233/666/888/999")
+        # print("当前路径:%s" % ftp.pwd())  # 返回当前所在位置
+        # DeleteFile(ftp, "/233/")
+        # DeleteDir(ftp, "/233/")
+        # TraversingIter(ftp)
+        # Traversing(ftp)
+        # upload(ftp,"D:\\workspace\\PythonSpace\\Spyder\\Spyder_aixinxi\\1.jpg")       #上传本地文件
+        # filepath = "018465277C419D288C652804D6B73926"  #上传文件名
+        # filepath = "1.jpg"  #上传文件名
+        # filepath = "DhzSUkJU0AA3b0M.png"  #上传文件名
+        # upload(ftp,filepath,fileNameMD5(filepath))
+        DeleteDirFiles(ftp)
+    except ftplib.error_perm as e:
+        print(e)
+    finally:
+        disconnect(ftp)
 
     # filename="test1.txt"
     # ftp.rename("test.txt", filename) #文件改名
