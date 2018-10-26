@@ -111,6 +111,13 @@ def fileNameMD5(filepath):
 
 # 上传文件
 def upload(ftp, filepath,file_name = None):
+    """
+    上传文件
+    :param ftp: 实例化的FTP对象
+    :param filepath: 上传文件的本地路径
+    :param file_name: 上传后的文件名（结合fileNameMD5()方法用）
+    :return:
+    """
     f = open(filepath, "rb")
     if file_name == None:
         file_name = os.path.split(filepath)[-1]
@@ -128,6 +135,12 @@ def upload(ftp, filepath,file_name = None):
 
 # 下载文件
 def download(ftp, filename):
+    """
+    下载文件
+    :param ftp: 实例化的FTP对象
+    :param filename: 需要从FTP下载的文件名
+    :return:
+    """
     f = open(filename,"wb").write
     try:
         ftp.retrbinary("RETR %s"%filename, f, buffer_size)
@@ -138,6 +151,12 @@ def download(ftp, filename):
 
 # 查找是否存在指定文件或目录
 def find(ftp,filename):
+    """
+    查找是否存在指定文件或目录
+    :param ftp:  实例化的FTP对象
+    :param filename:  需要查询是否存在的文件名
+    :return:
+    """
     ftp_f_list = ftp.nlst()  # 获取目录下文件、文件夹列表
     if filename in ftp_f_list:
         return True
@@ -146,6 +165,12 @@ def find(ftp,filename):
 
 # 检查是否有存在指定目录并创建
 def mkdir(ftp,dirpath):
+    """
+    检查是否有存在指定目录并创建（懒人用的方法）
+    :param ftp: 实例化的FTP对象
+    :param dirpath: 需要创建的文件夹名及路径
+    :return:
+    """
     if find(ftp, dirpath):
         print("%s目录已存在！自行跳转到该目录！"%dirpath)
         pwdSkip(ftp, dirpath)       # 设置FTP当前操作的路径
@@ -160,6 +185,13 @@ def mkdir(ftp,dirpath):
 
 # 删除目录下文件
 def DeleteFile(ftp,filepath = "/",file_name = None):
+    """
+    删除目录下文件,字面意思
+    :param ftp: 实例化的FTP对象
+    :param filepath: 操作的路径，默认值“/”
+    :param file_name: 需要删除的文件名，若不填，默认删除目录下所有的文件
+    :return:
+    """
     pwdSkip(ftp,filepath)   # 跳转到操作目录
     if find(ftp,file_name) and file_name != None:
         ftp.delete(file_name)   # 删除文件
@@ -178,8 +210,15 @@ def DeleteFile(ftp,filepath = "/",file_name = None):
     else:
         print("%s 未找到，删除中止！" % file_name)
 
-# 删除目录下的文件夹
+# 删除目录下的空文件夹
 def DeleteDir(ftp,dirpath,dir_name = None):
+    """
+    删除目录下的空文件夹，非空文件夹和文件不会删除
+    :param ftp: 实例化的FTP对象
+    :param dirpath: 操作的路径
+    :param dir_name: 需要删除的文件夹名，若不填，默认删除目录下所有的文件
+    :return:
+    """
     pwdSkip(ftp, dirpath)  # 跳转到操作目录
     if find(ftp,dir_name) and dir_name != None:
         ftp.delete(dir_name)   # 删除文件
