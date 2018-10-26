@@ -288,9 +288,23 @@ def main():
         dirpath = "test"        # 想要创建的文件夹名
         mkdir(ftp, dirpath)     # 在FTP新建一个名为“test”的文件夹
 
+        # 删除目录下文件
+        filepath = "/test"      # 需要删除的文件所在的路径
+        file_name = "test233.jpg"       # 需要删除的文件名
+        DeleteFile(ftp, filepath, file_name)    # 如果filepath，file_name不传值，默认filepath为“/”目录，file_name默认为None(详见该方法的说明)
+
+        # 删除目录下的文件夹
+        filepath = "/test"
+        file_name = "test233.jpg"
+        DeleteFile(ftp, filepath, file_name)        # 用法同上，只是它只删除空的文件夹，不删除文件和非空文件夹
+
+        # 查询目录下的非空文件夹
+        listdir(ftp, nlstListInfo(ftp))     # 此方法一般不单独使用，需结合 nlstListInfo()方法
+
+        # 遍历删除文件夹或文件
+        DeleteDirFiles(ftp)        # 删光光！
 
 
-        # ....
         # ....
 
     except ftplib.error_perm as e:
