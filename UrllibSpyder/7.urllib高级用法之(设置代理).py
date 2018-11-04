@@ -5,20 +5,25 @@ import urllib.request
 
 # 实例中的IP时间久了很可能会失效，可以自己寻找新的来更换
 proxy_handler = ProxyHandler({
-    "http":"http://142.154.219.66:43668",
-    "https":"https://85.133.185.206:8080"
+    # "http":"http://142.154.219.66:43668",
+    "http":"http://223.203.0.14:8080",
+    # "https":"https://221.7.255.167:80"
+    "https":"https://221.7.255.167:80"
+
 })
 opener = build_opener(proxy_handler)
 try:
-    response = opener.open("http://httpbin.org/get")
-    print(response.read().decode("utf-8"))
+    response = opener.open("https://www.iqing.com/")
+    print(response.status)
+    # print(response.read().decode("utf-8"))
 except urllib.error.URLError as ue:
     print(ue.reason)
 print("*"*50)
 
 try:
     response = opener.open("https://httpbin.org/get")
-    print(response.read().decode("utf-8"))
+    print(response.status)
+    # print(response.read().decode("utf-8"))
 except urllib.error.URLError as ue:
     print(ue.reason)
 print("*"*50)
