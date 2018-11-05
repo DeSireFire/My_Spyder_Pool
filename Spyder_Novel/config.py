@@ -1,9 +1,4 @@
 # coding:utf-8
-'''
-定义规则 urls:url列表
-         type：解析方式,取值 regular(正则表达式),xpath(xpath解析),module(自定义第三方模块解析)
-         patten：可以是正则表达式,可以是xpath语句不过要和上面的相对应
-'''
 import os,random
 
 '''
@@ -59,21 +54,52 @@ def get_header():
 爬虫爬取和检测ip的设置条件
 不需要检测ip是否已经存在，因为会定时清理
 '''
-UPDATE_TIME = 30 * 60  # 每半个小时检测一次是否有代理ip失效
-MINNUM = 50  # 当有效的ip值小于一个时 需要启动爬虫进行爬取
-
-TIMEOUT = 5  # socket延时
+TIMEOUT = 10  # socket延时
+PROXYURL = "http://127.0.0.1:8000/?types=0&count=5&country=国内 " # 本地代理池地址
 
 '''
-ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https),country(国家),area(省市),updatetime(更新时间)
- speed(连接速度)
+重试次数
+'''
+RETRY_TIME = 5
+
+'''
+定义规则 urls:url列表
+         type：解析方式,取值 regular(正则表达式),xpath(xpath解析),module(自定义第三方模块解析)
+         patten：可以是正则表达式,可以是xpath语句不过要和上面的相对应
 '''
 parserList = [
     {
-        'urls': ['http://www.wenku8.net/book/%s.htm' % n for n in range(1,5)],
-        # 'urls': ['https://www.qu.la/book/3952/'],
+        'urls': ['https://www.wenku8.net/book/%s.htm' % n for n in range(1,2403)],
         'type': 'module',
-        'pattern': ".//*[@id='main']/div/div[1]/table/tr[position()>1]",
+        'pattern': {
+                    "novel_info":{
+                        'novel_name':'e:16px; font-weight: bold; line-height: 150%"><b>([\s\S]*?)</b>', # 小说名
+                        'novel_writer':'<td width="20%">小说作者：([\s\S]*?)</td>',  # 作者名
+                        'novel_intro':'<span class="hottext">内容简介：</span><br /><span style="font-size:14px;">([\s\S]*?)</span>', # 小说简介
+                        'novel_headerImage':r'<td width="20%" align="center" valign="top">\r\n          <img src="([\s\S]*?)"', # 小说封面URL
+                        'novel_worksNum':'<td width="20%">全文长度：([\s\S]*?)</td>', # 小说字数
+                        'novel_types':'', #小说所属类型
+                        # 'novel_saveTime':'', # 小说收录时间
+                        # 'novel_updateTime':'', # 小说更新时间
+                        'novel_action':'<td width="20%">文章状态：([\s\S]*?)</td>', # 小说状态（连载or完结）
+                    },
+                    "Chapter":{
+                        'novel_title':'', # 小说册名
+                        'novel_secondaryId':'', # 小说章节id（用于网页）
+                        'novel_chapter':'', # 小说章节名
+                        'novel_chapterId':'', # 小说章节ID
+                        'novel_chapterSecNum':'', # 小说章节数
+                        'novel_chapterNum':'', # 小说总章节数
+                        'novel_container':'', # 小说正文
+                    },
+                    "artist":{
+                        'writer':'', # 作者名
+                        'illustrator':'', # 插画师名
+                        'library':'',  # 文库名
+                        'Result':'',  # 作者作品
+                        'Tags':'',  # 作者自定义标签
+                    },
+                },
         'position': {'ip': './td[1]', 'port': './td[2]', 'type': './td[4]', 'protocol': ''}
     },
 ]

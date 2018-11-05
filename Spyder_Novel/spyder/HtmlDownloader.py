@@ -3,6 +3,7 @@
 import random
 import config
 import json
+import spyder.HtmlHandler
 # from db.DataStore import sqlhelper
 
 __author__ = 'DeSireFire'
@@ -10,6 +11,12 @@ __author__ = 'DeSireFire'
 import requests
 import chardet
 
+P = {
+    "http":"http://114.113.126.86:80",
+    "https":"https://220.161.202.12:808",
+    # "https":"https://106.60.44.145:80",
+
+}
 
 class Html_Downloader(object):
     @staticmethod
@@ -21,8 +28,8 @@ class Html_Downloader(object):
         """
         try:
             # 网页请求成功
-            # r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT)
-            r = requests.get(url=url, headers=config.get_header(), timeout=0.1)
+            # r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=spyder.HtmlHandler.proxy_list())
+            r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=P)
 
             # 获取网页编码格式，并修改为request.text的解码类型
             r.encoding = chardet.detect(r.content)['encoding']
@@ -37,7 +44,8 @@ class Html_Downloader(object):
         except Exception:
             pass
             count = 0  # 重试次数
-            proxylist = sqlhelper.select(10)
+            # proxylist = sqlhelper.select(10)
+            proxylist = json.loads(requests.get(config.PROXYURL).text)
             if not proxylist:
                 return None
 
@@ -48,7 +56,8 @@ class Html_Downloader(object):
                     port = proxy[1]
                     proxies = {"http": "http://%s:%s" % (ip, port), "https": "http://%s:%s" % (ip, port)}
 
-                    r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
+                    r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=P)
+                    # r = requests.get(url=url, headers=config.get_header(), timeout=config.TIMEOUT, proxies=proxies)
                     r.encoding = chardet.detect(r.content)['encoding']
                     if (not r.ok) or len(r.content) < 500:
                         raise ConnectionError
