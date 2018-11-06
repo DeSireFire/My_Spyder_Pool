@@ -1,0 +1,6 @@
+Accept-Encoding: gzip,deflate
+User-Agent: Scrapy/1.4.0 (+http://scrapy.org)
+Referer: https://www.liepin.com/zhaopin/?key=java&d_pageSize=1000&dps=010&key=%E7%BD%91%E6%98%93&
+Cookie: JSESSIONID=C2CA9CC43272E5CEC47BB1F791071317; abtest=0
+Accept-Language: en
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
