@@ -1,6 +1,0 @@
-User-Agent: Scrapy/1.4.0 (+http://scrapy.org)
-Referer: https://www.liepin.com/zhaopin/?key=python&dps=010&key=%E7%99%BE%E5%BA%A6
-Accept-Language: en
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-Cookie: JSESSIONID=00D3B57B15136A3923A8933A4954028F; abtest=0
-Accept-Encoding: gzip,deflate
