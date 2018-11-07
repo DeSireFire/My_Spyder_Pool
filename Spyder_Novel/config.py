@@ -65,15 +65,15 @@ RETRY_TIME = 15
 
 '''
 定义规则 urls:url列表
-         urls_type：传入URL的方式，取值 urlFull(传入多个URL地址以遍历方式发送请求网页),urlIter(传入单个url,以循环生成的方式，自主产生URL)
+         crawler：
          type：解析方式,取值 regular(正则表达式),xpath(xpath解析),module(自定义第三方模块解析)
          patten：可以是正则表达式,可以是xpath语句不过要和上面的相对应
 '''
 parserList = [
     {
         # 'urls': ['https://www.wenku8.net/book/%s.htm' % n for n in range(1,2403)],
-        'urls': ['https://www.wenku8.net/book/475.htm'],
-        'type': 'module',
+        'urls': ['https://www.wenku8.net/book/1592.htm'],
+        'crawler':None,
         'pattern': {
                     "novel_info":{
                         'novel_name':'e:16px; font-weight: bold; line-height: 150%"><b>([\s\S]*?)</b>', # 小说名

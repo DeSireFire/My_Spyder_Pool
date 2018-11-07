@@ -1,34 +1,51 @@
-import requests,chardet,re
-import random
-import json
 import config
 import spyder.HtmlHandler
-import spyder.HtmlDownloader
+from spyder.HtmlDownloader import Html_Downloader
+
+def wenku8(parser):
+    # print(parser["urls"][0])
+    c = spyder.HtmlDownloader
+    req = c.Html_Downloader.download(config.parserList[0]["urls"][0])
+    if req:
+        if spyder.HtmlHandler.endDetection(req):
+            info = spyder.HtmlHandler.reglux_list(config.parserList[0]["pattern"]["novel_info"],req)
+            print(info)
+            if spyder.HtmlHandler.responseAgain(info):
+                # 需要二次请求
+                req = c.Html_Downloader.download(info["responseAgain"][0])
+                # print(req)
+                if req:
+                    # print(config.parserList[0]["pattern"]["Chapter"])
+                    # Chapter = spyder.HtmlHandler.reglux_list(config.parserList[0]["pattern"]["Chapter"],req)
+                    Chapter = spyder.HtmlHandler.reglux_list({'tbody':'<tr>([\s\S]*?)</tr>',},req)
+                    spyder.HtmlHandler.titleCheck(Chapter["tbody"],config.parserList[0]["pattern"]["Chapter"])
+
+            else:
+                # 不需要二次请求，于当前页完成内容爬取
+                print("不需要二次请求，于当前页完成内容爬取")
+
+        else:
+            print("到达尽头！")
+    else:
+        print(req)
+        print("请求失败，建议continue")
+
+def titleCheck(tlist):
+    tids = []   # 筛选出“原矿”列表中，所有册名的下标
+    for i in tlist:
+        if 'class="vcss"' in i:
+            tids.append(tlist.index(i))
+    count = 0
+    recdict = {}
+    while count+1 < len(tids):# 使用卷名下标来对列表中属于章节的部分切片出来
+        temp = tlist[tids[count]:tids[count + 1]]
+        if count+1 == len(tids)-1:
+            temp=tlist[tids[count + 1]:]
+        recdict[temp[0]] = ''.join(temp[1:])
+        count +=1
+    for m,n in recdict.items():
+        print('%s:%s'%(m,n))
+
 
 if __name__ == '__main__':
-    # try:
-        # # 网页请求成功
-        # r = requests.get(url='https://www.wenku8.net/novel/2/2475/index.htm', headers=config.get_header(), timeout=10)
-        #
-        # # 获取网页编码格式，并修改为request.text的解码类型
-        # r.encoding = chardet.detect(r.content)['encoding']
-        #
-        # # 网页请求OK或者请求得到的内容过少，判断为连接失败
-        # if (not r.ok) or len(r.content) < 500:
-        #     raise ConnectionError
-        # else:
-
-    # except Exception as e:
-    #     print(e)
-    # for url in config.parserList[0]["urls"]:
-    #     response = Html_Downloader.download(url)
-    #     if response is not None:
-    #         reglux_list(config.parserList[0]['pattern']["novel_info"], response)
-    #     else:
-    #         print("%s 爬取失败" % url)
-    r = spyder.HtmlDownloader.Html_Downloader.download(url='https://www.wenku8.net/novel/2/2475/index.htm')
-
-    # pattern = re.compile(config.parserList[0]["pattern"]["Chapter"]['novel_title'])
-    # matchs = pattern.findall(r)
-    matchs = spyder.HtmlHandler.reglux_list({'novel_title':r'<td class="vcss" colspan="4">(.*?)</td>',},r)
-    print(matchs)
+    wenku8(config.parserList[0])

@@ -2,6 +2,23 @@ import re,requests,config,json
 
 __author__ = 'DeSireFire'
 
+
+
+# 是否使用专用爬虫
+def crawlerChoice(parser):
+    '''
+
+    :param parser: config的parserList中的元素
+    :return:
+    '''
+    if parser['crawler'] == 'wenku8':
+        import spyder.wenku8
+        print("wenku8 专用爬虫")
+        return spyder.wenku8.wenku8(parser)
+    else:
+        print("使用通用爬虫")
+        return None
+
 # 页面尽头检测
 def endDetection(response,keyList = config.keyList):
     """
@@ -35,12 +52,23 @@ def responseAgain(infoDict):
     else:
         return False
 
+def reglux(str_pattern,text):
+    """
+    正则抓取
+    :param str_pattern:正则表达式
+    :param text: 需要匹配的1文本
+    :return:
+    """
+    pattern = re.compile(str_pattern)
+    matchs = pattern.findall(text)
+    return  matchs
+
 
 def reglux_list(mydict,response):
     """
     遍历正则抓取数据
     :param mydict: 字典类型{key:正则表达式，}
-    :param response: request.text
+    :param response: request.text需要正则匹配的字符串
     :return: 字典类型
     """
     temp = {}
@@ -84,3 +112,30 @@ def proxy_list(url = config.PROXYURL,testURL = config.testURL):
     except Exception as e:
         # print(e)
         return None
+
+# 卷名识别以及章节从属
+def titleCheck(tlist,Rlist,tkey='class="vcss"'):
+    """
+    若出现卷名和章节名都在同一个页面时（例如：https://www.wenku8.net/novel/1/1592/index.htm）,
+    用此函数整理分卷和其所属章节的关系,并用reglux_list方法进行清洗
+    :param tlist:列表，包含卷名和章节名的列表
+    :param tkey:字符串，用来判断区分列表卷名和章节的关键字
+    :param Rlist:传入config.parserList[i]["pattern"]["Chapter"]
+    :return:
+    """
+    tids = []   # 筛选出“原矿”列表中，所有册名的下标
+    for i in tlist:
+        if tkey in i:
+            tids.append(tlist.index(i))
+    count = 0
+    recdict = {}
+    while count+1 < len(tids):# 使用卷名下标来对列表中属于章节的部分切片出来
+        temp = tlist[tids[count]:tids[count + 1]]
+        if count+1 == len(tids)-1:
+            temp=tlist[tids[count + 1]:]
+        recdict[reglux(Rlist['novel_title'],temp[0])[0]] = reglux(Rlist['novel_chapter'], ''.join(temp[1:]))
+        count +=1
+    print(recdict)
+    # for m,n in recdict.items():
+    #     print(type(n))
+    #     print('%s:%s'%(m,n))
