@@ -5,12 +5,14 @@ HOST = ''  # FTP主机地址
 username = ''  # 用户名
 password = ''  # 密码
 buffer_size = 8192  # 缓冲区大小
-
-
+PORT = 21
+timeout = 30
 # 连接登陆
-def connect():
+def conn():
     try:
-        ftp = ftplib.FTP(HOST)  # 实例化FTP对象
+
+        ftp = ftplib.FTP()  # 实例化FTP对象
+        ftp.connect(HOST,PORT,timeout)
         ftp.login(username, password)  # 登录
         ftp.set_pasv(False)  # 如果被动模式由于某种原因失败，请尝试使用活动模式。
         print(ftp.getwelcome())
@@ -273,7 +275,7 @@ def DeleteDirFiles(ftp,dirpath = "/"):
 # 主函数
 def main():
     # 连接登陆ftp（必须的）
-    ftp = connect()
+    ftp = conn()
     try:
         # 以下是各种方法的使用示例
 
