@@ -1,5 +1,5 @@
 import requests
-
+from Spyder.aixinxi.aixinxi_config import H,data
 
 url = 'https://tu-t1.oss-cn-hangzhou.aliyuncs.com/'
 

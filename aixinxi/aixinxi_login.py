@@ -33,22 +33,22 @@ response_read_cookie = opener2.open(aixinxi_login_url2)
 print("使用获取的cookies来的访问网页成功！")
 print("*" * 50)
 #上传图片文件
-aixinxi_login_url3 = "https://tu.aixinxi.net/includes/save.php"
-dirt = {
-    "Host":"tu.aixinxi.net",
-    "Connection":"keep-alive",
-    "Content-Length":"37",
-    "Accept":"*/*",
-    "Origin":"https://tu.aixinxi.net",
-    "X-Requested-With":"XMLHttpRequest",
-    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
-    "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
-    "Referer":"https://tu.aixinxi.net/index.php",
-    "Accept-Language":"zh-CN,zh;q=0.9,en;q=0.8",
-    "ming":"o_1cq3oq991g0q1lt3121t04boka.jpg",
-}
-aixinxi_login_Images = bytes(urllib.parse.urlencode(dirt),encoding="utf8")
-aixinxi_login_request = urllib.request.Request(url=aixinxi_login_url,data=aixinxi_login_data,method="POST")
-response_upImages = opener2.open(aixinxi_login_url3)
-print(response_upImages.read().decode("utf-8"))
-print("*" * 50)
+# aixinxi_login_url3 = "https://tu.aixinxi.net/includes/save.php"
+# dirt = {
+#     "Host":"tu.aixinxi.net",
+#     "Connection":"keep-alive",
+#     "Content-Length":"37",
+#     "Accept":"*/*",
+#     "Origin":"https://tu.aixinxi.net",
+#     "X-Requested-With":"XMLHttpRequest",
+#     "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+#     "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+#     "Referer":"https://tu.aixinxi.net/index.php",
+#     "Accept-Language":"zh-CN,zh;q=0.9,en;q=0.8",
+#     "ming":"o_1cq3oq991g0q1lt3121t04boka.jpg",
+# }
+# aixinxi_login_Images = bytes(urllib.parse.urlencode(dirt),encoding="utf8")
+# aixinxi_login_request = urllib.request.Request(url=aixinxi_login_url,data=aixinxi_login_data,method="POST")
+# response_upImages = opener2.open(aixinxi_login_url3)
+# print(response_upImages.read().decode("utf-8"))
+# print("*" * 50)
