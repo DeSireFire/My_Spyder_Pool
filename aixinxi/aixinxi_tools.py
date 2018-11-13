@@ -1,4 +1,4 @@
-import requests,re
+import requests,re,json
 from Spyder.aixinxi.aixinxi_config import *
 
 
@@ -71,10 +71,18 @@ def updata(header,fileName,filesRead):
         header.update(update_header)
     else:
         header.update(update_header)
-    update_data['name'] =  fileName
-    update_data['key'] =  fileName
+    temp_data = token_get(header)
+    if temp_data:
+        update_data['policy'] =  temp_data['policy']
+        update_data['signature'] =  temp_data['signature']
+        update_data['AccessKeyId'] =  temp_data['AccessKeyId']
+        update_data['name'] =  fileName
+        update_data['key'] =  fileName
+    else:
+        print("token获取失败")
+        return False
     req = requests.post(url=update_url, headers=header, data=update_data, files=filesRead)
-    if req.status_code == '200':
+    if req.status_code == 200:
         print('上传成功！')
         info = save(header,fileName)
         if info:
@@ -105,7 +113,7 @@ def save(header,fileName):
     header.update(save_header)
     data_save['ming'] = fileName
     req = requests.post(url=save_url, headers=header, data=data_save)
-    print(req.text.split(','))
+    print(req.text.split(',')[:2])
     print(req.headers)
     return req.text.split(',')
 
@@ -145,7 +153,21 @@ def filesFind(header,fileName):
             print(fileslist)
             return fileslist
 
-
+# token密钥获取
+def token_get(header):
+    """
+    {'policy': 'xx', 'signature': 'xx', 'AccessKeyId': 'xx'}/False
+    :param header: 请求头部
+    :return: 成功，传回字典；失败传回False
+    """
+    header.update(token_header)
+    del header['upgrade-insecure-requests']
+    req = requests.get(url=token_url, headers=header)
+    if req.status_code == 200:
+        return json.loads(req.text)
+    else:
+        print('token请求失败！')
+        return False
 
 # 退出aixinxi
 def loginOutloginOut(outcookie):
@@ -174,20 +196,20 @@ def main():
     # else:
     #     print('No')
     header_test = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-               'cookie': 'PHPSESSID=gb9b12bgkn4a8gv1mf2ur50ud3',
+               'cookie': 'PHPSESSID=0brn62r55getvgtrkqp3s7vov2',
                'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
                'upgrade-insecure-requests': '1'}
     # with open('1.jpg', 'rb') as f:
     #     files = {'file': f}
-    f = open('1.jpg', 'rb')
-    files = {'file':f}
     # userFiles({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-    # save({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
     # delete({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
     # filesFind({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-    updata(header_test,'o_1cq3gdm9jqcm11g87jv1ghiqaez.jpg',files)
-    f.close()
-
+    # f = open('1.jpg', 'rb')
+    # files = {'file':f}
+    # updata(header_test,'o_1cq3oq991g0q1lt3121t04baka.jpg',files)
+    # f.close()
+    save(header_test,'o_1cq3oq991g0q1lt3121t04baka.jpg')
+    # token_get(header_test)
     # loginOutloginOut('PHPSESSID=29botdjah0n9seekpdm2n9d0o5')
 if __name__ == '__main__':
     main()
