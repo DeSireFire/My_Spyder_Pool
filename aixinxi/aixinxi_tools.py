@@ -1,4 +1,4 @@
-import requests,re,json
+import requests,re,json,hashlib
 from Spyder.aixinxi.aixinxi_config import *
 
 
@@ -9,7 +9,7 @@ def login():
     :return:登陆成功后返回cookie
     """
     header = get_header()
-    req1 = requests.post(url=login_url, headers=header, data=login_dirt)
+    req1 = requests.post(url=login_url, headers=header, data=login_dirt, proxies=proxy_list())
     # req = requests.post(url=login_url, headers=get_header())
     if req1.status_code == 200:
         header.update({'cookie':req1.headers['Set-Cookie'][:36],'referer':'https://tu.aixinxi.net/views/pages.php?id=explore','upgrade-insecure-requests':'1',})
@@ -29,7 +29,7 @@ def logining(header = logining_Header):
     :param header: 字典，请求头
     :return: 布尔值
     """
-    req = requests.post(url=index_url, headers=header)
+    req = requests.post(url=index_url, headers=header, proxies=proxy_list())
     if '<a href="https://tu.aixinxi.net/views/login.php"><i class="fa fa-user" aria-hidden="true"></i> 登录/注册</a>' not in req.text:
         return True
     else:
@@ -113,9 +113,7 @@ def save(header,fileName):
     header.update(save_header)
     data_save['ming'] = fileName
     req = requests.post(url=save_url, headers=header, data=data_save)
-    print(req.text.split(',')[:2])
-    print(req.headers)
-    return req.text.split(',')
+    return req.text.split(',')[:2]
 
 # 删除图片
 def delete(header,key):
@@ -130,12 +128,17 @@ def delete(header,key):
     header.update(delete_header)
     header['referer'] += key
     data_delete['key'] = key
-    req = requests.post(url=delete_url, headers=header, data=data_delete)
+    req = requests.post(url=delete_url, headers=header, data=data_delete, proxies=proxy_list())
     if 'ok' in req.text:
+        print('OK')
+        print(req.status_code)
         print(req.text)
+        print(req.headers)
         return True
     else:
+        print(req.status_code)
         print(req.text)
+        print(req.headers)
         return False
 
 # 查找图片信息
@@ -169,6 +172,11 @@ def token_get(header):
         print('token请求失败！')
         return False
 
+# 文件名生成器
+def fileNameIter():
+    hash_md5 = hashlib.md5(fileName_data)
+    return hash_md5.hexdigest()
+
 # 退出aixinxi
 def loginOutloginOut(outcookie):
     """
@@ -189,6 +197,38 @@ def loginOutloginOut(outcookie):
     # print(req.reason)
     # print(req.headers)
 
+def proxy_list(url = PROXYURL,testURL = testURL):
+    """
+    获取并检测代理池返回的IP
+    :param url: 获取IP的代理池地址
+    :param testURL: 检测网址
+    :return: 一个能用的ip组成的proxies字典
+    """
+    count = 0 # 获取的IP数
+    try:
+        r = requests.get(url)
+        count = len(json.loads(r.text))
+        while count != 0:
+            r = requests.get(url)
+            ip_ports = json.loads(r.text)
+            count = len(ip_ports)
+            for i in range(0,4):
+                ip = ip_ports[i][0]
+                port = ip_ports[i][1]
+                proxies = {
+                    'http': 'http://%s:%s' % (ip, port),
+                    'https': 'https://%s:%s' % (ip, port)
+                }
+                r = requests.get(testURL, proxies=proxies,timeout=TIMEOUT)
+                if (not r.ok) or len(r.content) < 500:
+                    r = requests.get(delproxyIP%(ip,port))
+                else:
+                    return proxies
+
+    except Exception as e:
+        # print(e)
+        return None
+
 def main():
     # ok = login()
     # if ok:
@@ -196,20 +236,25 @@ def main():
     # else:
     #     print('No')
     header_test = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-               'cookie': 'PHPSESSID=0brn62r55getvgtrkqp3s7vov2',
+               'cookie': 'PHPSESSID=t3jmdeom2p7s4f21q5ju9do6m0',
                'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
                'upgrade-insecure-requests': '1'}
     # with open('1.jpg', 'rb') as f:
     #     files = {'file': f}
-    # userFiles({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-    # delete({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+    # a = logining(header=ok)
+    # print(a)
+    # fl = userFiles(header_test)
+    # print(fl)
+    # delete(header_test,'44764c752081126b509b12091356f56c')
     # filesFind({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
     # f = open('1.jpg', 'rb')
     # files = {'file':f}
-    # updata(header_test,'o_1cq3oq991g0q1lt3121t04baka.jpg',files)
+    # updata(header_test,'o_1cq3oq991g0q1lt3121t04dada.jpg',files)
     # f.close()
-    save(header_test,'o_1cq3oq991g0q1lt3121t04baka.jpg')
+    # save(header_test,'o_1chq3v5e43um1bocaru1iqn7b8c.gif')
+    # delete(header_test, '77d2e98552f54ead5b4f8380e09e5fb1')
     # token_get(header_test)
     # loginOutloginOut('PHPSESSID=29botdjah0n9seekpdm2n9d0o5')
+    # print(fileNameIter())
 if __name__ == '__main__':
     main()
