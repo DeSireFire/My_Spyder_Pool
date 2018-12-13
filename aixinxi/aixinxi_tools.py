@@ -249,7 +249,7 @@ def main():
     # filesFind({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
     # f = open('1.jpg', 'rb')
     # files = {'file':f}
-    updata(header_test,'o_1cq3oq991g0q1lt3121t04dada.jpg',files)
+    # updata(header_test,'o_1cq3oq991g0q1lt3121t04dada.jpg',files)
     # f.close()
     # save(header_test,'o_1chq3v5e43um1bocaru1iqn7b8c.gif')
     # delete(header_test, '0bf0577871ccd5d890b9b7ccfc243ec0')
