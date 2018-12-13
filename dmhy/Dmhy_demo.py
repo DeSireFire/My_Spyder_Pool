@@ -40,7 +40,7 @@ import re
 <strong>簡介:&nbsp;</strong><br /><p><font face="Helvetica">字幕制作 <a href="http://windmoe.com/" target="_blank" rel="external nofollow">WINDMOE.COM</a></font></p>\r\n<p>&nbsp;</p>\r\n<p><img src="http://windmoe.com/wp-content/uploads/2011/04/ryuki02.jpg" style="width: 500px; height: 283px" alt="" /></p>\r\n<p>&nbsp;</p>\r\n<p><font face="Helvetica">制作废话<br />\r\n三月这样那样的忙，所以第二话迟来了，抱歉。魔法少女小圆跟假面骑士龙骑，意外的有不少相似，但貌似不能相提并论。另外，个人也想跟QB或神崎士郎签约，笑。</font></p>\r\n<p>&nbsp;</p>\r\n<p><font face="Helvetica">【名称】<br />\r\n仮面ライダー龍騎,Kamen Rider Ryuki,假面骑士龙骑,幪面超人龍騎</font></p>\r\n<p>&nbsp;</p>\r\n<p><font face="Helvetica">【介绍】<br />\r\n平成第三作，以镜世界为主题，假面骑士再不是英雄的代名词，而是欲望的追随者。作为13名假面骑士的一员，城户真司却是以保护人类为己任，这也引发与其他骑士间的一系列斗争&hellip;&hellip;（By yamilawliet）</font></p><br />\n</div>
 '''
 
-URL = 'https://share.dmhy.org/topics/list/page/3475'
+URL = 'https://share.dmhy.org/topics/list/page/3400'
 
 # re_time = '<spanstyle="display:none;">([\s\S]*?)</span></td>'
 # re_type = '<tdwidth="6%"align="center"><aclass="([\s\S]*?)"href="'
@@ -53,8 +53,8 @@ re_infoURL = '<ahref="/topics/view/([\s\S]*?)"target="_blank">'
 re_time = '<li>發佈時間:<span>([\s\S]*?)</span></li>'
 re_type = '<tdwidth="6%"align="center"><aclass="([\s\S]*?)"href="'
 re_title = '<divclass="topic-titleboxui-corner-all"><h3>([\s\S]*?)</h3>'
-re_size = '<divclass="topic-titleboxui-corner-all"><h3>([\s\S]*?)</h3>'
-re_info = '<strong>簡介:&nbsp;</strong><br />([\s\S]*?)</p><br />'
+re_size = '<li>文件大小:<span>([\s\S]*?)</span></li>'
+re_info = '<strong>簡介:&nbsp;</strong>([\s\S]*?)<a name="description-end"></a>'
 re_magnet1 = '<aclass="magnet"id="a_magnet"href="([\s\S]*?)">([\s\S]*?)</a>'
 re_magnet2 = '<aid="magnet2"href="([\s\S]*?)">([\s\S]*?)</a>'
 
@@ -111,24 +111,23 @@ def re_DMHY(html_text,re_pattern,nbsp_del = True):
     if nbsp_del:
         return pattern.findall("".join(html_text.split()))
     else:
-        return pattern.findall(html_text.split())
+        return pattern.findall(html_text)
 
 def main_DMHY():
     ha_hi_fu_he_ho = list(map(lambda x:getDMHY_types('viewInfoURL')+x,re_DMHY(HtmlDownloader(URL,_header),re_infoURL)))
+    b = 0
     for ma_mi_mu_me_mo in ha_hi_fu_he_ho:
         ya_yu_yo = HtmlDownloader(ma_mi_mu_me_mo, _header)
-        # rec_dict = {
-        #     # '标题':re_DMHY(ya_yu_yo, re_title)[0],
-        #     # '发布时间':re_DMHY(ya_yu_yo, re_time)[0],
-        #     '文件大小':re_DMHY(ya_yu_yo, re_size),
-        #     # 'Magnet連接':list(re_DMHY(ya_yu_yo, re_magnet1)[0]),
-        #     # 'Magnet連接typeII':list(re_DMHY(ya_yu_yo, re_magnet2)[0]),
-        #     '简介':re_DMHY(ya_yu_yo, re_info),
-        #     '详情URL':ma_mi_mu_me_mo,
-        # }
-        # print(rec_dict)
-        print([ya_yu_yo])
-
+        rec_dict = {
+            # '标题':re_DMHY(ya_yu_yo, re_title)[0],
+            # '发布时间':re_DMHY(ya_yu_yo, re_time)[0],
+            '文件大小':re_DMHY(ya_yu_yo, re_size),
+            # 'Magnet連接':list(re_DMHY(ya_yu_yo, re_magnet1)[0]),
+            # 'Magnet連接typeII':list(re_DMHY(ya_yu_yo, re_magnet2)[0]),
+            '简介':r'<div>\r\n'+re_DMHY(ya_yu_yo, re_info,False)[0],
+            '详情URL':ma_mi_mu_me_mo,
+        }
+        print(rec_dict)
 
 
 
