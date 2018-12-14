@@ -26,10 +26,10 @@ def getBest(URL,_header,_str = False):
 
     _respone = requests.get(url=URL,headers=_header)
     if _str:
-        # print(''.join(list(map(lambda x: '&tr='+x,_respone.text.split()))))
+        print(''.join(list(map(lambda x: '&tr='+x,_respone.text.split()))))
         return ''.join(list(map(lambda x: '&tr='+x,_respone.text.split())))
     else:
-        # print(list(map(lambda x: '&tr='+x,_respone.text.split())))
+        print(list(map(lambda x: '&tr='+x,_respone.text.split())))
         return list(map(lambda x: '&tr='+x,_respone.text.split()))
 
 
