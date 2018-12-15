@@ -1,5 +1,6 @@
 import requests,re,json,hashlib
-from Spyder.aixinxi.aixinxi_config import *
+# from Spyder.aixinxi.aixinxi_config import *
+from aixinxi.aixinxi_config import *
 
 
 # 登陆aixinxi
