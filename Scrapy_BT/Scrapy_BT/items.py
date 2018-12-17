@@ -26,6 +26,7 @@ class dmhyItem(scrapy.Item):
     rdDownloadNum = scrapy.Field()#资源下载数
     rdInfo = scrapy.Field()#资源介绍
     rdOK = scrapy.Field()#资源完成数
-    rdURLS = scrapy.Field()#资源下载链接
+    rdMagnet = scrapy.Field()#资源下载链接
+    rdMagnet2 = scrapy.Field()#资源下载链接
     rdType =scrapy.Field()#资源种类
     rdView = scrapy.Field()#资源详细页地址
