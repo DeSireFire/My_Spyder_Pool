@@ -6,25 +6,30 @@ from Scrapy_BT.items import dmhyItem
 class DmhySpider(scrapy.Spider):
     name = "dmhy"
     allowed_domains = ["share.dmhy.org"]
-    start_urls = ['http://share.dmhy.org/']
+    start_urls = ['https://www.dmhy.org/topics/list/page/1']
 
     def parse(self, response):
-        # dmhys = response.css('.tag')
+        # dmhys = response.css('.title')
+        dmhys = response
+        print(self.start_urls)
+        # print("这里瞩目一下！！！！！response：%s"%dmhys.text)
+        print("这里瞩目一下！！！！！response：%s"%type(dmhys))
         # for dmhy in dmhys:
         #     item = dmhyItem()
-        #     item['rdName'] = dmhy.css('.text')
-        #     item['rdUpTime'] = dmhy.css('.text')
-        #     item['rdSize'] = dmhy.css('.text')
-        #     item['rdUpNum'] = dmhy.css('.text')
-        #     item['rdDownloadNum'] = dmhy.css('.text')
-        #     item['rdInfo'] = dmhy.css('.text')
-        #     item['rdOK'] = dmhy.css('.text')
-        #     item['rdURLS'] = dmhy.css('.text')
-        #     item['rdType'] = dmhy.css('.text')
-        #     item['rdView'] = dmhy.css('.text')
+        #     item['rdName'] = dmhy.css('.title')
+        #     item['rdUpTime'] = dmhy.css('.title')
+        #     item['rdSize'] = dmhy.css('.title')
+        #     item['rdUpNum'] = dmhy.css('.title')
+        #     item['rdDownloadNum'] = dmhy.css('.title')
+        #     item['rdInfo'] = dmhy.css('.title')
+        #     item['rdOK'] = dmhy.css('.title')
+        #     item['rdURLS'] = dmhy.css('.title')
+        #     item['rdType'] = dmhy.css('.title')
+        #     item['rdView'] = dmhy.css('.title')
         #     yield item
-        #
-        # _next = response.css('.a::attr("href")').extract_first()
-        # url = response.urljoin(_next)
-        # yield scrapy.Request(url=url,callback=self.parse)
-        pass
+
+        _next = response.css('a::attr("href")').extract_first()
+        print("这里瞩目一下！！！！！%s" % _next)
+        url = response.urljoin(_next)
+        print("这里瞩目一下！！！！！%s"%url)
+        yield scrapy.Request(url=url,callback=self.parse)
