@@ -63,9 +63,9 @@ DEFAULT_REQUEST_HEADERS = config.get_header()
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'Scrapy_BT.pipelines.ScrapyBtPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'Scrapy_BT.pipelines.ScrapyBtPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -87,3 +87,6 @@ HTTPCACHE_EXPIRATION_SECS = 0
 HTTPCACHE_DIR = 'httpcache'
 HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# 修改编码为utf-8
+# FEED_EXPORT_ENCODING = 'utf-8'
