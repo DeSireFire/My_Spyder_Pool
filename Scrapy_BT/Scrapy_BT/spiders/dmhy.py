@@ -9,7 +9,8 @@ class DmhySpider(scrapy.Spider):
     '''
     name = "dmhy"
     allowed_domains = ["share.dmhy.org"]
-    start_urls = ['https://www.dmhy.org/topics/list/page/2']
+    # start_urls = ['https://share.dmhy.org']
+    start_urls = ['https://share.dmhy.org/topics/list/page/4381']
 
     re_infoURL = '<ahref="/topics/view/([\s\S]*?)"target="_blank">'
     re_time = '<li>發佈時間:<span>([\s\S]*?)</span></li>'
@@ -25,25 +26,38 @@ class DmhySpider(scrapy.Spider):
         a_i_u_e_o = response.text
         ha_hi_fu_he_ho = list(map(lambda x: self.getDMHY_types('viewInfoURL') + x, self.re_DMHY(a_i_u_e_o, self.re_infoURL)))
         sa_shi_su_se_so = self.re_DMHY(a_i_u_e_o, self.re_type)
-        print(len(ha_hi_fu_he_ho))
-        print(len(sa_shi_su_se_so))
-        for ma_mi_mu_me_mo, na_ni_nu_ne_no in zip(ha_hi_fu_he_ho, sa_shi_su_se_so):
-            rec_dict = {
-                '类别': self.getDMHY_types(na_ni_nu_ne_no),
-                '标题': '',
-                '发布时间': '',
-                '文件大小': '',
-                'Magnet連接': '',
-                'Magnet連接typeII': '',
-                '简介': r'<div>\r\n' + '',
-                '详情URL': ma_mi_mu_me_mo,
-            }
-            yield scrapy.Request(url=rec_dict["详情URL"], callback=self.infoView, meta={"item": rec_dict})
-        print("这里瞩目一下！！！！！我能运行到这里！！！！")
-        # _next = response.css('.nav_title .fl a::attr("href")').extract_first()
-        # url = response.urljoin(_next)
-        # yield scrapy.Request(url=url,callback=self.parse)
+        # for ma_mi_mu_me_mo, na_ni_nu_ne_no in zip(ha_hi_fu_he_ho, sa_shi_su_se_so):
+        #     rec_dict = {
+        #         '类别': self.getDMHY_types(na_ni_nu_ne_no),
+        #         '标题': '',
+        #         '发布时间': '',
+        #         '文件大小': '',
+        #         'Magnet連接': '',
+        #         'Magnet連接typeII': '',
+        #         '简介': r'<div>\r\n' + '',
+        #         '详情URL': ma_mi_mu_me_mo,
+        #     }
+        #     yield scrapy.Request(url=rec_dict["详情URL"], callback=self.infoView, meta={"item": rec_dict})
+        _next = response.css('.nav_title .fl a::attr("href")').extract()
 
+        # 采集下一页的地址，如果有两个元素说明为存在上下页地址
+        if len(_next) == 2 :
+            _next = _next[1] # 第二个元素必为下一页地址
+        else:
+            if response.url == 'https://share.dmhy.org':
+                _next = _next[0]
+            # 当前url和next的URL的尾数字是否相同
+            else:
+                if int(response.url.split('/')[-1]) >= int(_next[0].split('/')[-1]):
+                    print('判断爬取到底页')
+                    _next = 'https://share.dmhy.org'
+
+        print(_next)
+        url = response.urljoin(_next)
+        yield scrapy.Request(url=url,callback=self.parse,dont_filter=True)
+
+    def update_parse(self,response):
+        pass
 
     def infoView(self, response):
         rec_dict_temp = {
@@ -64,7 +78,7 @@ class DmhySpider(scrapy.Spider):
         item['rdInfo'] = z['简介']
         item['rdOK'] = z['文件大小']
         item['rdMagnet'] = z['Magnet連接']
-        item['rdMagnet2'] = z['Magnet連接typeII']
+        item['rdMagnet2'] = z['Magnet連接typeII'][0]
         item['rdType'] = z['类别']
         item['rdView'] = z['详情URL']
         yield item
