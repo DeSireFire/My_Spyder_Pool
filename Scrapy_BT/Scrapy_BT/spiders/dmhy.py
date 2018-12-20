@@ -10,7 +10,6 @@ class DmhySpider(scrapy.Spider):
     name = "dmhy"
     allowed_domains = ["share.dmhy.org"]
     start_urls = ['https://share.dmhy.org']
-    # start_urls = ['https://share.dmhy.org/topics/list/page/4381']
 
     re_infoURL = '<ahref="/topics/view/([\s\S]*?)"target="_blank">'
     re_time = '<li>發佈時間:<span>([\s\S]*?)</span></li>'
@@ -53,7 +52,7 @@ class DmhySpider(scrapy.Spider):
 
         print(_next)
         url = response.urljoin(_next)
-        yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
+        # yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
 
     def update_parse(self,response):
         pass
@@ -81,7 +80,6 @@ class DmhySpider(scrapy.Spider):
         item['rdTracker'] =z['Magnet連接'][0][len(z['Magnet連接'][1]):]
         item['rdType'] = z['类别']
         item['rdView'] = z['详情URL']
-        yield item
 
 
     def getDMHY_types(self, _str):
