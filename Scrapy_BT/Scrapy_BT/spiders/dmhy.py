@@ -9,8 +9,8 @@ class DmhySpider(scrapy.Spider):
     '''
     name = "dmhy"
     allowed_domains = ["share.dmhy.org"]
-    # start_urls = ['https://share.dmhy.org']
-    start_urls = ['https://share.dmhy.org/topics/list/page/4381']
+    start_urls = ['https://share.dmhy.org']
+    # start_urls = ['https://share.dmhy.org/topics/list/page/4381']
 
     re_infoURL = '<ahref="/topics/view/([\s\S]*?)"target="_blank">'
     re_time = '<li>發佈時間:<span>([\s\S]*?)</span></li>'
@@ -49,11 +49,11 @@ class DmhySpider(scrapy.Spider):
             else:
                 if int(response.url.split('/')[-1]) >= int(_next[0].split('/')[-1]):
                     # 爬取到底页，回到页首
-                    _next = 'https://share.dmhy.org'
+                    _next = 'https://www.dmhy.org'
 
         print(_next)
         url = response.urljoin(_next)
-        # yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
+        yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
 
     def update_parse(self,response):
         pass
@@ -76,8 +76,9 @@ class DmhySpider(scrapy.Spider):
         item['rdDownloadNum'] = z['文件大小']
         item['rdInfo'] = z['简介']
         item['rdOK'] = z['文件大小']
-        item['rdMagnet'] = z['Magnet連接']
+        item['rdMagnet'] = z['Magnet連接'][1]
         item['rdMagnet2'] = z['Magnet連接typeII'][0]
+        item['rdTracker'] =z['Magnet連接'][0][len(z['Magnet連接'][1]):]
         item['rdType'] = z['类别']
         item['rdView'] = z['详情URL']
         yield item
