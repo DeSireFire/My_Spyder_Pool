@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy,re,chardet
-# import Scrapy_BT.Scrapy_BT.tools.test
 from Scrapy_BT.items import dmhyItem
 
 class DmhySpider(scrapy.Spider):
