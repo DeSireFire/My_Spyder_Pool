@@ -12,8 +12,6 @@ sm_headers = {
     "Content - Length":"57398",
     "Content - Type":"multipart / form - data;boundary = ----WebKitFormBoundarypAIqI1RWBfPWiOKq------WebKitFormBoundarypAIqI1RWBfPWiOKq",
     "Content - Disposition":"form - data;name = 'smfile';filename = '1.png'",
-    # "Content - Type":"image / png-----WebKitFormBoundarypAIqI1RWBfPWiOKq",
-    # "Content - Disposition":"form - data;name = 'file_id'0- -----WebKitFormBoundarypAIqI1RWBfPWiOKq - -",
 }
 # sm_headers,sm_dict = multipart_encode({
 #     "smfile":open('1.jpg', 'rb')
