@@ -8,7 +8,10 @@ import codecs,json
 
 class ScrapyBtPipeline(object):
     def process_item(self, item, spider):
-        return item
+        # return item
+        # 如果爬虫名是movie
+        if spider.name == 'dmhy':
+            print('老子是管道，我感受到了力量')
 
 class dmhyPipeline(object):
     # def __init__(self):

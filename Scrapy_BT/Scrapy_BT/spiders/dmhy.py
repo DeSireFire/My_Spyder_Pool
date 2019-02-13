@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import scrapy,re,chardet
+import scrapy,re,chardet,random
 from Scrapy_BT.items import dmhyItem
 
 class DmhySpider(scrapy.Spider):
@@ -56,10 +56,11 @@ class DmhySpider(scrapy.Spider):
     def update_parse(self,response):
         pass
 
+
     def infoView(self, response):
         rec_dict_temp = {
             '标题':self.re_DMHY(response.text, self.re_title)[0],
-            '发布时间':self.re_DMHY(response.text, self.re_time)[0],
+            '发布时间':self.timeMaker(self.re_DMHY(response.text, self.re_time)[0]),
             '文件大小':self.re_DMHY(response.text, self.re_size)[0],
             'Magnet連接':list(self.re_DMHY(response.text, self.re_magnet1)[0]),
             'Magnet連接typeII':list(self.re_DMHY(response.text, self.re_magnet2)[0]),
@@ -79,7 +80,7 @@ class DmhySpider(scrapy.Spider):
         item['rdTracker'] =z['Magnet連接'][0][len(z['Magnet連接'][1]):]
         item['rdType'] = z['类别']
         item['rdView'] = z['详情URL']
-
+        yield item
 
     def getDMHY_types(self, _str):
         '''
@@ -124,3 +125,11 @@ class DmhySpider(scrapy.Spider):
             return pattern.findall("".join(html_text.split()))
         else:
             return pattern.findall(html_text)
+
+    def timeMaker(self0,time_str):
+        '''
+        由于动漫花园的资源发布时间没有秒，该函数用来添加秒数，并整理时间格式
+        :param time_str: 传入例如：2019/02/1222:09等14或15位长度的时间字符串
+        :return:整理好的时间字符串
+        '''
+        return "{} {}:{}{}.{}".format('-'.join(time_str[:10].split('/')), time_str[10:],random.randint(0,5),random.randint(0,9),''.join(str(random.choice(range(10))) for i in range(6)))
