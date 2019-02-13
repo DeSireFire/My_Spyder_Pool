@@ -51,7 +51,7 @@ class DmhySpider(scrapy.Spider):
 
         print(_next)
         url = response.urljoin(_next)
-        # yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
+        yield scrapy.Request(url=url,callback=self.parse,dont_filter=False)
 
     def update_parse(self,response):
         pass
@@ -78,8 +78,9 @@ class DmhySpider(scrapy.Spider):
         item['rdMagnet'] = z['Magnet連接'][1]
         item['rdMagnet2'] = z['Magnet連接typeII'][0]
         item['rdTracker'] =z['Magnet連接'][0][len(z['Magnet連接'][1]):]
-        item['rdType'] = z['类别']
+        item['rdType_id'] = z['类别'][1]
         item['rdView'] = z['详情URL']
+        item['isdelete'] = 0
         yield item
 
     def getDMHY_types(self, _str):
@@ -89,25 +90,25 @@ class DmhySpider(scrapy.Spider):
         :return: 字符串
         '''
         types = {
-            'sort-2': '动画',
-            'sort-31': '季度全集',
-            'sort-3': '漫画',
-            'sort-41': '港台漫画',
-            'sort-42': '日版漫画',
-            'sort-4': '音乐',
-            'sort-43': '动漫音乐',
-            'sort-44': '同人音乐',
-            'sort-15': '流行音乐',
-            'sort-6': '日剧',
-            'sort-7': '生肉（RAW）',
-            'sort-9': '游戏',
-            'sort-17': '电脑游戏',
-            'sort-18': '电视游戏',
-            'sort-19': '掌机游戏',
-            'sort-20': '网络游戏',
-            'sort-21': '游戏周边',
-            'sort-12': '特摄',
-            'sort-1': '其他',
+            'sort-2': ['动画','1'],
+            'sort-31': ['季度全集','11'],
+            'sort-3': ['漫画','2'],
+            'sort-41': ['港台漫画','21'],
+            'sort-42': ['日版漫画','22'],
+            'sort-4': ['音乐','3'],
+            'sort-43': ['动漫音乐','31'],
+            'sort-44': ['同人音乐','32'],
+            'sort-15': ['流行音乐','33'],
+            'sort-6': ['日剧','4'],
+            'sort-7': ['生肉（RAW）','5'],
+            'sort-9': ['游戏','6'],
+            'sort-17': ['电脑游戏','61'],
+            'sort-18': ['电视游戏','62'],
+            'sort-19': ['掌机游戏','63'],
+            'sort-20': ['网络游戏','64'],
+            'sort-21': ['游戏周边','65'],
+            'sort-12': ['特摄','7'],
+            'sort-1': ['其他','8'],
             'viewInfoURL': 'https://share.dmhy.org/topics/view/',
         }
         return types[_str]
