@@ -1,4 +1,4 @@
-# # Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -109,7 +109,7 @@ Desktop.ini
 __pycache__/
 .idea
 *.torrent
-# tracker.txt
-# autopush.sh
-# torrent-parser.py
-# Dmhy_demo.py
+tracker.txt
+autopush.sh
+torrent-parser.py
+Dmhy_demo.py
