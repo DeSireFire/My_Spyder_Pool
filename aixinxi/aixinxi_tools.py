@@ -14,8 +14,11 @@ def login():
     # req = requests.post(url=login_url, headers=get_header())
     if req1.status_code == 200:
         header.update({'cookie':req1.headers['Set-Cookie'][:36],'referer':'https://tu.aixinxi.net/views/pages.php?id=explore','upgrade-insecure-requests':'1',})
+        # update_url = re.findall('upserver ="(.*?)";var',req1.text)[0]
         if logining(header):
             print('登陆成功！')
+            print(header)
+            print('页面内容：%s'%req1.text)
             return header
         else:
             print('登陆失败！')
@@ -74,15 +77,17 @@ def updata(header,fileName,filesRead):
         header.update(update_header)
     temp_data = token_get(header)
     if temp_data:
+        print(temp_data)
         update_data['policy'] =  temp_data['policy']
         update_data['signature'] =  temp_data['signature']
-        update_data['AccessKeyId'] =  temp_data['AccessKeyId']
+        update_data['OSSAccessKeyId'] =  temp_data['AccessKeyId']
         update_data['name'] =  fileName
         update_data['key'] =  fileName
     else:
         print("token获取失败")
         return False
     req = requests.post(url=update_url, headers=header, data=update_data, files=filesRead)
+    print(req)
     if req.status_code == 200:
         print('上传成功！')
         info = save(header,fileName)
@@ -231,31 +236,38 @@ def proxy_list(url = PROXYURL,testURL = testURL):
         return None
 
 def main():
-    # ok = login()
-    # if ok:
-    #     print(ok)
-    # else:
-    #     print('No')
-    header_test = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-               'cookie': 'PHPSESSID=8snmttr07uetioomcjpjslge57',
-               'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
-               'upgrade-insecure-requests': '1'}
+    ok = login()
+    if ok:
+        print(ok)
+    else:
+        print('No')
+        ok = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+                   'cookie': 'PHPSESSID=8snmttr07uetioomcjpjslge57',
+                   'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
+                   'upgrade-insecure-requests': '1'}
+    # header_test = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+    #            'cookie': 'PHPSESSID=p1t04jhd6124a909c8ee3r9om7',
+    #            'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
+    #            'upgrade-insecure-requests': '1'}
     # with open('1.jpg', 'rb') as f:
     #     files = {'file': f}
+
     # a = logining(header=ok)
     # print(a)
-    # fl = userFiles(header_test)
+    # fl = userFiles(ok)
     # print(fl)
     # delete(header_test,'44764c752081126b509b12091356f56c')
     # filesFind({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-    # f = open('1.jpg', 'rb')
-    # files = {'file':f}
-    # updata(header_test,'o_1cq3oq991g0q1lt3121t04dada.jpg',files)
-    # f.close()
+    f = open('yiyayiyayo.jpg', 'rb')
+    # f = open('DhzSUkJU0AA3b0M.png', 'rb')
+    files = {'file':f}
+    updata(ok,'o_1cq3oq991g0q1lt3121t93111.jpg',files)
+    f.close()
     # save(header_test,'o_1chq3v5e43um1bocaru1iqn7b8c.gif')
-    # delete(header_test, '0bf0577871ccd5d890b9b7ccfc243ec0')
-    # token_get(header_test)
-    # loginOutloginOut('PHPSESSID=29botdjah0n9seekpdm2n9d0o5')
+    # delete(ok, '8c3376149aec75567bcd162bcacb5254')
+    # print(token_get(ok))
+    # loginOutloginOut('PHPSESSID=qta1s4q5d8i47al65qnk9datb0')
+    loginOutloginOut(ok['cookie'])
     # print(fileNameIter())
 if __name__ == '__main__':
     main()

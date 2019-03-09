@@ -1,7 +1,4 @@
-import requests
-import time
-import json
-import re
+import requests,re,time,json
 URL = 'http://tool.chacuo.net/commontorrentinfo'
 
 FormData = {
@@ -43,7 +40,6 @@ def Handler(tempStr):
 def BTtoMagnet(URL,FormData,_header):
     _respone = requests.post(url=URL,data=FormData,headers=_header)
     _respone.encoding = 'unicode_escape'
-
     Handler(_respone.text)
 
 
