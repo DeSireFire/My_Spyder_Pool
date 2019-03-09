@@ -11,14 +11,10 @@ def login():
     """
     header = get_header()
     req1 = requests.post(url=login_url, headers=header, data=login_dirt, proxies=proxy_list())
-    # req = requests.post(url=login_url, headers=get_header())
     if req1.status_code == 200:
         header.update({'cookie':req1.headers['Set-Cookie'][:36],'referer':'https://tu.aixinxi.net/views/pages.php?id=explore','upgrade-insecure-requests':'1',})
-        # update_url = re.findall('upserver ="(.*?)";var',req1.text)[0]
         if logining(header):
             print('登陆成功！')
-            print(header)
-            print('页面内容：%s'%req1.text)
             return header
         else:
             print('登陆失败！')
@@ -35,6 +31,7 @@ def logining(header):
     """
     req = requests.post(url=index_url, headers=header, proxies=proxy_list())
     if '<a href="https://tu.aixinxi.net/views/login.php"><i class="fa fa-user" aria-hidden="true"></i> 登录/注册</a>' not in req.text:
+
         return True
     else:
         return False
@@ -44,7 +41,7 @@ def userFiles(header):
     """
 
     :param header: 字典，请求头
-    :return: 列表，所有图片文件名和key,例如：[('6472a56c546d31de83a11a15ebcf57bd', 'o_1cq3oq991g0q1lt3121t04boka.jpg'),]
+    :return: 列表，所有图片文件名和key,例如：[('6472a56c546d31de83a1xxxxxxxx', 'o_1cq3oq991g0q1lt3121t04boka.jpg'),]
     """
     header['referer'] = 'https://tu.aixinxi.net/views/userFiles.php'
     page = 1
@@ -75,6 +72,14 @@ def updata(header,fileName,filesRead):
         header.update(update_header)
     else:
         header.update(update_header)
+
+    # 获取上传的地址
+    req_ossurl = requests.post(url=index_url, headers=header)
+    new_update_url = re.findall('upserver ="(.*?)";var', req_ossurl.text)[0]
+    print('获取上传地址:%s'%new_update_url)
+    if new_update_url:
+        update_url = new_update_url
+
     temp_data = token_get(header)
     if temp_data:
         print(temp_data)
@@ -236,38 +241,56 @@ def proxy_list(url = PROXYURL,testURL = testURL):
         return None
 
 def main():
+
+    # 登陆爱信息图床并返回有关头部信息
     ok = login()
     if ok:
         print(ok)
     else:
         print('No')
-        ok = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-                   'cookie': 'PHPSESSID=8snmttr07uetioomcjpjslge57',
-                   'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
-                   'upgrade-insecure-requests': '1'}
-    # header_test = {'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
-    #            'cookie': 'PHPSESSID=p1t04jhd6124a909c8ee3r9om7',
-    #            'referer': 'https://tu.aixinxi.net/views/pages.php?id=explore',
-    #            'upgrade-insecure-requests': '1'}
-    # with open('1.jpg', 'rb') as f:
-    #     files = {'file': f}
 
-    # a = logining(header=ok)
-    # print(a)
-    # fl = userFiles(ok)
-    # print(fl)
-    # delete(header_test,'44764c752081126b509b12091356f56c')
-    # filesFind({'User-Agent': 'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)',
+    # 使用头部信息访问首页，判断是否登陆成功
+    a = logining(header=ok)
+    print(a)
+
+    # 查询操作
+    # 查询该登录账号在爱信息图床所有的图片名
+    fl = userFiles(ok)
+    print(fl)
+
+    # 删除操作
+    # 按照爱信息图床返回的图片key,来删除图片
+    # delete(ok,'44764c752081126b509b12091356f56c')
+
+    # 添加操作（上传文件）+保存
+    # 以二进制方式读取本地文件到内存
     f = open('yiyayiyayo.jpg', 'rb')
-    # f = open('DhzSUkJU0AA3b0M.png', 'rb')
     files = {'file':f}
-    updata(ok,'o_1cq3oq991g0q1lt3121t93111.jpg',files)
+    # 上传函数包括以下步骤：
+    # 1.传入登陆的头信息、打算保存在图床的文件名、文件二进制码
+    # 2.先调整上传的头部信息
+    # 3.向目标首页发送请求，获取具体上传的OSS服务器地址
+    # 4.向目标网站发送请求，获取对应的osskey信息，并加入到待发送的data中
+    # 5.对oss存储服务器地址，发送带key的data,以及上传文件，获取返回值信息
+    # 6.将返回信息保存到自己对应的图床账号，以便管理
+    # 注意，updata方法，内置了token_get、save两个方法。使用updata方法以后不需要单独调用save、token_get方法。除非需要单独测试
+    updata(ok,'o_test.jpg',files)
+    # 关闭文件读取，释放内存
     f.close()
+
+    # 其他操作
+    # 将图片信息保存到自己图床账号，方便管理，不建议单独使用
     # save(header_test,'o_1chq3v5e43um1bocaru1iqn7b8c.gif')
-    # delete(ok, '8c3376149aec75567bcd162bcacb5254')
+
+    # 获取osskey信息
     # print(token_get(ok))
-    # loginOutloginOut('PHPSESSID=qta1s4q5d8i47al65qnk9datb0')
+
+    # 账号退出，短时间登陆过多次账户而不退出，会出现提示禁止登陆
+    # 传入已登陆的cookie值
     loginOutloginOut(ok['cookie'])
-    # print(fileNameIter())
+
+    # 文件名随机生成
+    print(fileNameIter())
+
 if __name__ == '__main__':
     main()
