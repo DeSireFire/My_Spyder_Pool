@@ -2,3 +2,4 @@
 .idea/
 aixinxi/aixinxi_config.py
 */.scrapy/
+/aixinxi/aixinxi_test.py
