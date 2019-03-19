@@ -1,7 +1,8 @@
 import urllib.request
 
 # 发送请求
-response = urllib.request.urlopen("https://tu.aixinxi.net/index.php")
+# response = urllib.request.urlopen("https://tu.aixinxi.net/index.php")
+response = urllib.request.urlopen("http://t1.aixinxi.net/o_1d67ri9e81odjqhr17bbs8s184la.txt")
 '''
 response的类型为http.client.HTTPResponse
 这个类型如下几种常用的方法：
@@ -22,8 +23,8 @@ closed
 '''
 
 # read()方法，读取响应并解码打印
-# print(response.read().decode("utf-8"))
-# print("*"*50)
+print(response.read().decode("utf-8"))
+print("*"*50)
 
 # readinfo()方法，暂时未知有何作用
 # print(response.readinto())
