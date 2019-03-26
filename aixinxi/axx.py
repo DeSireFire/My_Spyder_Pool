@@ -34,7 +34,7 @@ def logining(header):
     else:
         return False
 
-# 读取文件列表
+# 读取所有文件列表
 def userFiles(header):
     """
     :param header: 字典，请求头
@@ -119,6 +119,7 @@ def save(header,fileName):
     data_save['ming'] = fileName
     req = requests.post(url=save_url, headers=header, data=data_save)
     print(req)
+    print(req.text)
     choose = req.status_code
     while choose!=200:
         req = requests.post(url=save_url, headers=header, data=data_save)
@@ -151,20 +152,37 @@ def delete(header,key):
         print(req.headers)
         return False
 
-# 查找图片信息
+# 关键字查找
 def filesFind(header,fileName):
     """
-
+    查找存在fileName的所有文件
     :param header: 请求头
     :param fileName: 需要查询的文件名
     :return: 列表，[key,fileName] 例如：['1b655e2a822747c3c78af0859ca1b63c', 'o_1cq3gdm9jqcm11g87jv1ghiqaea.jpg']
     """
-    fileslist = userFiles(header)
-    for t in fileslist:
-        if fileName in t:
-            fileslist = list(t)
-            print(fileslist)
-            return fileslist
+    page = 1
+    data = []
+    while page != 0:
+        url = 'https://tu.aixinxi.net/views/userFiles.php?page=%s' % (page)
+        # 普通请求一次,如果失败就会进入循环
+        req = requests.get(url=url, headers=header)
+        choose = req.status_code
+        while choose != 200:
+            req = requests.get(url=url, headers=header)
+            choose = req.status_code
+        pattern = re.compile(r'<td><a style="color:#000" target="_blank" href="https://tu.aixinxi.net/views/fileJump.php\?key=(.*?)&ming=(.*?)">管理</a>', re.S)
+        tempfilesList = re.findall(pattern, req.text)
+        if tempfilesList:
+            for t in tempfilesList:
+                if fileName in str(t):
+                    fileslist = list(t)
+                    print('查找到:%s' % fileslist)
+                    data += [fileslist]
+            page += 1
+        else:
+            page = 0
+    return data
+
 
 # token密钥获取
 def token_get(header):
@@ -200,6 +218,28 @@ def loginOutloginOut(outcookie):
         req = requests.post(url=loginOut_url, headers={'cookie': outcookie}, data=loginOut_dirt)
         choose = req.status_code
     print('退出成功！')
+
+# 获取指定url的文本内容
+def urlText(url):
+    '''
+    本来是只打算左爱信息图床的文本查看的，但是想象什么区别，
+    干脆弄成啥文本都能看算了
+    注意：只能查看文本文件，图片不行！！！
+    :param url: 需要请求的网络连接
+    :return:字符串，文本
+    '''
+    import chardet
+    req = requests.post(url=url)
+    choose = req.status_code
+    while choose!=200:
+        req = requests.post(url=url)
+        choose = req.status_code
+    # 获取网页编码格式，并修改为request.text的解码类型
+    req.encoding = chardet.detect(req.content)['encoding']
+    if req.encoding == "GB2312":
+        req.encoding = "GBK"
+    return req.text
+
 
 def main():
 
