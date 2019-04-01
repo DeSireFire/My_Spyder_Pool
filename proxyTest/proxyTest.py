@@ -25,12 +25,6 @@ for temp in proxyList:
             print(proxies)
     except Exception as e:
         print(e)
-        # if '强迫关闭' in str(e) or '积极拒绝' in str(e):
-        #     print('执行删除操作！%s'%temp[0])
-        #     temp = delProxyUrl%(temp[0],temp[1])
-        #     delproxy = requests.get(temp)
-        #     if int(delproxy.text):
-        #         print('删除成功！')
         print('执行删除操作！%s' % temp[0])
         temp = delProxyUrl % (temp[0], temp[1])
         delproxy = requests.get(temp)
