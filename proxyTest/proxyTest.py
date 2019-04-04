@@ -4,9 +4,9 @@ import requests,json
 # for debug to disable insecureWarning
 requests.packages.urllib3.disable_warnings()
 
-proxyUrl1 = 'http://192.168.37.128:5010/get_all/'
 proxyUrl2 = 'http://192.168.37.128:5010/get_all/'
 # testUrl = 'https://www.wenku8.net/book/1.htm'
+# testUrl = 'https://tu.aixinxi.net/index.php'
 testUrl = 'https://www.bilibili.com/'
 # testUrl = 'https://twitter.com/'
 # testUrl = 'https://share.dmhy.org'
@@ -14,9 +14,8 @@ testUrl = 'https://www.bilibili.com/'
 # testUrl = 'http://httpbin.org/get'
 delProxyUrl = 'http://192.168.37.128:5010/delete?proxy=%s'
 # 获取 代理列表s
-res = requests.get(url=proxyUrl1)
+res = requests.get(url=proxyUrl2)
 proxyList = json.loads(res.text)
-print(res.text)
 for temp in proxyList:
     proxies = {
         'http': 'http://%s'%(temp),
@@ -31,5 +30,5 @@ for temp in proxyList:
         print('执行删除操作！%s' % temp)
         temps = delProxyUrl % (temp)
         delproxy = requests.get(temps)
-        if delproxy.text:
+        if 'success' in delproxy.text:
             print('删除成功！')
