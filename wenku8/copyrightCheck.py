@@ -11,7 +11,7 @@ for i in urls:
     if resRespone.encoding == "GB2312":
         resRespone.encoding = "GBK"
     # print(resRespone.text)
-    if '版权' in resRespone.text:
+    if '版权问题' in resRespone.text:
     # 输出成文本
         print('发现版小说，%s'%i)
         with open('版权小说统计.txt', 'a+', encoding='utf-8') as f:
