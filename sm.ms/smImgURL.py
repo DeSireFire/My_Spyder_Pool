@@ -2,11 +2,18 @@ import requests,re
 myheader = {
 'Host':'sm.ms',
 }
-# files = {'smfile':open('68259314_p0.jpg','rb')}
-imgData = requests.get(url="https://img2.gelbooru.com//images/f6/8a/f68a9eeca44005da5bb829a55190783a.jpg")
-files = {'smfile':imgData.content}
-req = requests.post(url="https://sm.ms/api/upload",files=files)
+dataJson = {
+    'Content-Type':'image/gif',
+    'filename':"1.png",
+}
+# files = {'smfile':open('20190212153649.gif','rb')}
+# imgData = requests.get(url="https://cdn.pixabay.com/photo/2017/09/14/11/07/water-2748640_960_720.png")
+# imgData = requests.get(url="https://img2.gelbooru.com//images/f6/8a/f68a9eeca44005da5bb829a55190783a.jpg")
+imgData = requests.get(url="https://wx2.sinaimg.cn/large/006yt1Omgy1g06dgqftmxg305u06we81.gif")
+files = {'smfile':('233.gif',imgData.content)}
+req = requests.post(url="https://sm.ms/api/upload",headers= myheader,files=files,data=dataJson)
 print(req.json())
+print(type(req.json()))
 '''
 成功以后运行结果如下：
 {'code': 'success', 'data': {'width': 150, 'height': 155, 'filename': '1.jpg', 'storename': '5bc9d5e084d19.jpg', 'size': 28902, 'path': '/2018/10/19/5bc9d5e084d19.jpg', 'hash': 'nVgKA5E8tLcofJx', 'timestamp': 1539954144, 'ip': '171.36.8.151', 'url': 'https://i.loli.net/2018/10/19/5bc9d5e084d19.jpg', 'delete': 'https://sm.ms/delete/nVgKA5E8tLcofJx'}}
