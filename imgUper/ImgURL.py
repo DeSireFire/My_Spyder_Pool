@@ -4,13 +4,7 @@ myheader = {
 }
 
 proxies = { "http": "http://203.150.142.138:8080", "https": "http://203.150.142.138:8080", }
-# files = {'smfile':open('20190212153649.gif','rb')}
-# imgData = requests.get(url="https://cdn.pixabay.com/photo/2017/09/14/11/07/water-2748640_960_720.png")
-# imgData = requests.get(url="https://img2.gelbooru.com//images/f6/8a/f68a9eeca44005da5bb829a55190783a.jpg")
-imgData = requests.get(url="https://wx2.sinaimg.cn/large/006yt1Omgy1g06dgqftmxg305u06we81.gif")
-files = {'smfile':('233.gif',imgData.content)}
-req = requests.post(url="https://sm.ms/api/upload",headers= myheader,files=files,proxies=proxies)
-print(req.json())
+req = requests.get(url="http://192.168.0.102:5360/tools/imgUrlSave/?imgUrl=https://img2.gelbooru.com//images/8b/48/8b481fa761a11cd66a41f6c9268d5284.jpg",headers= myheader)
 print(type(req.json()))
 '''
 成功以后运行结果如下：
@@ -19,9 +13,6 @@ print(type(req.json()))
 由于只是测试所以就不要给别人的图床增加那么多负担啦,这是浪费资源，何况这是一个免费的良心图床，
 不要让贡献者寒心，所以测试完，记得删除！这是礼仪！
 '''
-req = requests.post(url='https://sm.ms/api/clear')
-print(req.text)
-
 # req = requests.post(url=req.json()['data']['delete'])
 # pattern = re.compile('<div class="bs-callout bs-callout-warning" style="border-left-width: 2px;">([\s\S]*?)</div>',re.S)
 # titles = re.findall(pattern,req.text)
