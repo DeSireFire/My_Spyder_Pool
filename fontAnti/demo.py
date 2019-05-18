@@ -72,6 +72,6 @@ def delfile(my_file):
         print('no such file:%s' % my_file)
 
 if __name__ == '__main__':
-    for i in range(1,11):
+    for i in range(1,2000):
         main()
-        time.sleep(20)
+        time.sleep(25)
