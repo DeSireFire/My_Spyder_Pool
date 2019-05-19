@@ -1,6 +1,5 @@
 import requests,chardet
 
-# url = 'https://www.biquge.com.cn/book/23488/'
 url = 'https://www.csdn.net/'
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36',
