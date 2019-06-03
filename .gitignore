@@ -4,3 +4,4 @@ aixinxi/aixinxi_config.py
 aixinxi/demo/aixinxi_config.py
 */.scrapy/
 /aixinxi/aixinxi_test.py
+/v2Json/*.json
