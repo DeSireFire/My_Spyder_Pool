@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import json
 import os
 
@@ -7,7 +9,7 @@ class xstr:
         self.instr = instr
 
     # 删除“//”标志后的注释
-    def rmCmt(self):
+    def rmCmt(self): 
         qtCnt = cmtPos = slashPos = 0
         rearLine = self.instr
         # rearline: 前一个“//”之后的字符串，
@@ -45,37 +47,17 @@ class xstr:
         else:
             return False
 
-def fileDel(filePath):
-    if os.path.exists(filePath):
-        # 删除文件，可使用以下两种方法。
-        os.remove(filePath)
-        # os.unlink(my_file)
-    else:
-        print('no such file:%s' % filePath)
-
 def jsonHandler(filePath):
-    fileDel(os.path.join(os.getcwd(), 'temp.json'))
+    dstJsonStr = []
     f = open(filePath,'r')
-    fList = f.read()
-    # fList = f.readlines()
-
+    fList = f.readlines()
     f.close()
-    with open(os.path.join(os.getcwd(),'temp.json'),'a') as w:
-        # for i in fList:
-        #     xline = xstr(i)
-        #     w.write(xline.rmCmt())
-        xline = xstr(fList)
-        w.write(xline.rmCmt())
+    for i in fList:
+        xline = xstr(i)
+        dstJsonStr += xline.rmCmt()
+    with open(os.path.join(os.getcwd(),'demo.json'),'a') as w:
+        for i in dstJsonStr:
+            w.write(i)
 
-    # f = open(os.path.join(os.getcwd(),'temp.json'),'r')
-    # jsonFile = f.read()
-    # f.close()
-    # fileDel(os.path.join(os.getcwd(), 'temp.json'))
-    # jsonV2 = json.loads(jsonFile)
-    # # for i in jsonV2:
-    # #     print(i,jsonV2[i])
-    #
-    # for i in jsonV2['inbounds']:
-    #     print(i)
 if __name__ == '__main__':
     jsonHandler('config.json')
