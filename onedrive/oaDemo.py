@@ -27,40 +27,45 @@ def get_sign_in_url():
     scope=oauthDict['scopes'],
     redirect_uri=oauthDict['redirect'])
     sign_in_url, state = new_auth.authorization_url(authorize_url, prompt='login')
-    mydata = {
-        "grant_type": "password",
-        "username": "zzzz",
-        "password": "zzzz",
-        "client_id": oauthDict['app_id'],
-        # "resource": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-        "client_secret": oauthDict['app_secret'],
-}
     print(sign_in_url)
     print(state)
     print(authorize_url)
     print(token_url)
-    req = requests.post(token_url,data = mydata)
-    print(req.text)
-    print(authorize_url+'?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={redirect_uri}'.format(client_id = oauthDict['app_id'],scope = oauthDict['scopes'],redirect_uri = oauthDict['redirect']))
-    '''
-    GET https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id={client_id}&scope={scope}&response_type=code&redirect_uri={redirect_uri}
-    '''
-    # print(authorize_url+'?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}'.format(client_id = oauthDict['app_id'],redirect_uri = oauthDict['redirect']))
     return sign_in_url, state
 
 def get_token_from_code(callback_url, expected_state):
-  # Initialize the OAuth client
-    aad_auth = OAuth2Session(oauthDict['app_id'],
-    state=expected_state,
-    scope=oauthDict['scopes'],
-    redirect_uri=oauthDict['redirect'])
-
-    token = aad_auth.fetch_token(token_url,
-    client_secret = oauthDict['app_secret'],
-    authorization_response=callback_url)
-
-    return token
+    '''
+    得到返回链接：https://github.com/DeSireFire/AlienVan?code=M4d63b8cd-2951-1a96-fe98-f186a5c6e302&state=a13ypG9SFzKej0tQXvBiD1QPt46x9v
+    :param callback_url: 为示例链接里面的code
+    :param expected_state: 为实例链接里面的state
+    :return:
+    '''
+    # Initialize the OAuth client
+    # aad_auth = OAuth2Session(oauthDict['app_id'],
+    # state=expected_state,
+    # scope=oauthDict['scopes'],
+    # redirect_uri=oauthDict['redirect'])
+    #
+    # token = aad_auth.fetch_token(token_url,
+    # client_secret = oauthDict['app_secret'],
+    # authorization_response=callback_url)
+    #   return token
+    myheader = {
+        'Content-Type':'application/x-www-form-urlencoded'
+    }
+    data = {
+        'client_id':oauthDict['app_id'],
+        'redirect_uri':oauthDict['redirect'],
+        'client_secret':oauthDict['app_secret'],
+        'code':callback_url,
+        'grant_type':'authorization_code',
+    }
+    print(data)
+    req = requests.post(token_url,headers = myheader,data=data)
+    print(req.text)
 
 if __name__ == '__main__':
     # pass
-    get_sign_in_url()
+    # get_sign_in_url()
+    # a,b = get_sign_in_url()
+    get_token_from_code('M4d63b8cd-2951-1a96-fe98-f186a5c6e302','a13ypG9SFzKej0tQXvBiD1QPt46x9v')
