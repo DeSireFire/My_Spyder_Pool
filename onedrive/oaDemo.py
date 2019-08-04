@@ -4,6 +4,7 @@ import requests,json
 redirect 跳转URL必须与应用中 平台 添加的 web 重定向URL 保持一致
 https://apps.dev.microsoft.com/?referrer=https%3A%2F%2Fdev.onedrive.com#/appList
 使用非localhost时，URL必须使用https.
+https://login.live.com/oauth20_authorize.srf?client_id=e2d585cd-751f-4c7e-aab7-d8b48c485f94&response_type=code&redirect_uri=https%3A%2F%2Fod.cnbeining.com&scope=wl.signin+wl.offline_access+onedrive.readwrite
 '''
 oauthDict = {
 'app_id':'e2d585cd-751f-4c7e-aab7-d8b48c485f94',
