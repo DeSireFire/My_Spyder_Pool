@@ -56,9 +56,15 @@ def get_token_from_code(code, expected_state):
     }
     req = requests.post(token_url,headers = myheader,data=data)
     print(json.loads(req.text))
+    print(type(json.loads(req.text)))
     return json.loads(req.text)
 
 def flush_token(refresh_token):
+    '''
+    令牌刷新
+    :param refresh_token: 字符串，原旧的令牌
+    :return:
+    '''
     data = {
         'client_id':oauthDict['app_id'],
         'redirect_uri':oauthDict['redirect'],
@@ -68,6 +74,7 @@ def flush_token(refresh_token):
     }
     req = requests.post(token_url,data=data)
     print(json.loads(req.text))
+    print(type(json.loads(req.text)))
     return json.loads(req.text)
 
 if __name__ == '__main__':
@@ -76,6 +83,6 @@ if __name__ == '__main__':
     sign_in_url,state = get_sign_in_url()
     print(sign_in_url)
     print(state)
-    code = input('code:')
-    temp = get_token_from_code(code,state)
-    flush_token(temp['refresh_token'])
+    # code = input('code:')
+    # temp = get_token_from_code(code,state)
+    # flush_token(temp['refresh_token'])

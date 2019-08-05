@@ -5,3 +5,4 @@ aixinxi/demo/aixinxi_config.py
 */.scrapy/
 /aixinxi/aixinxi_test.py
 /v2Json/*.json
+/onedrive/sec.py
