@@ -1,6 +1,6 @@
 from requests_oauthlib import OAuth2Session
 import requests,json
-
+from onedrive.sec import *
 '''
 授权链接(旧)：
 https://login.live.com/oauth20_authorize.srf?client_id=e2d585cd-751f-4c7e-aab7-d8b48c485f94&response_type=code&redirect_uri=https://od.cnbeining.com&scope=wl.signin wl.offline_access onedrive.readwrite
@@ -13,18 +13,6 @@ https://apps.dev.microsoft.com/?referrer=https%3A%2F%2Fdev.onedrive.com#/appList
 使用非localhost时，URL必须使用https.
 https://login.live.com/oauth20_authorize.srf?client_id=e2d585cd-751f-4c7e-aab7-d8b48c485f94&response_type=code&redirect_uri=https%3A%2F%2Fod.cnbeining.com&scope=wl.signin+wl.offline_access+onedrive.readwrite
 '''
-oauthDict = {
-'app_id':'e2d585cd-751f-4c7e-aab7-d8b48c485f94',
-'app_secret':'o.+2TBy+7-ijKLMl05spsohdx464OtwU',
-'redirect':'https://od.cnbeining.com',
-'scopes':['wl.signin', 'wl.offline_access', 'onedrive.readwrite'],
-# 'scopes':'openid profile offline_access user.read calendars.read',
-'authority':'https://login.microsoftonline.com/common',
-'authorize_endpoint':'/oauth2/v2.0/authorize',
-'token_endpoint':'/oauth2/v2.0/token',
-}
-authorize_url = '{0}{1}'.format(oauthDict['authority'], oauthDict['authorize_endpoint'])    # https://login.microsoftonline.com/common/oauth2/v2.0/authorize
-token_url = '{0}{1}'.format(oauthDict['authority'], oauthDict['token_endpoint'])    # https://login.microsoftonline.com/common/oauth2/v2.0/token
 
 def get_sign_in_url():
     '''
@@ -83,6 +71,6 @@ if __name__ == '__main__':
     sign_in_url,state = get_sign_in_url()
     print(sign_in_url)
     print(state)
-    # code = input('code:')
-    # temp = get_token_from_code(code,state)
-    # flush_token(temp['refresh_token'])
+    code = input('code:')
+    temp = get_token_from_code(code,state)
+    flush_token(temp['refresh_token'])
