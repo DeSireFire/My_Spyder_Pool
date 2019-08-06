@@ -19,23 +19,34 @@ from onedrive.sec import *
 #     print(type(json.loads(req.text)))
 #     return json.loads(req.text)
 
-def od_filesList():
-    data = {
-        'Authorization':'Bearer %s'%info['refresh_token'],
-        # 'Content - Type':'application / json',
-        # 'client_id':oauthDict['app_id'],
-        # 'redirect_uri':oauthDict['redirect'],
-        # 'client_secret':oauthDict['app_secret'],
-        # 'refresh_token':info['refresh_token'],
-        # 'grant_type':'refresh_token',
-    }
-    temp = flush_token(info['refresh_token'])
-    print(temp)
-    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(temp['access_token'])}
-    req = requests.get('https://graph.microsoft.com/v1.0/me/drive', headers = data)
-    # req = requests.get('https://api.onedrive.com/v1.0/drive/root/children', headers = data)
-    print(req.text)
+def od_filesList(od_type,path=''):
+    '''
+    文件列表查询
+    :param od_type: 布尔，onedrive 类型
+    :param path: 字符串，目标目录名
+    :return:
+    '''
+    app_url = "https://graph.microsoft.com"
+    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(info["access_token"])}
+    if od_type:
+        app_url = app_url+"/v1.0/me/drive"
+    # else:
+    #     app_url = "https://{}-my.sharepoint.cn/_api/v2.0/me/drive".format(data_list.other)
+    if path:
+        BaseUrl = app_url + '/root:{}:/children?expand=thumbnails'.format(path)
+    else:
+        BaseUrl = app_url + '/root/children?expand=thumbnails'
+
+    get_res = requests.get(BaseUrl, headers=headers, timeout=30)
+    get_res = json.loads(get_res.text)
+    print(get_res)
+    for i in get_res:
+        print('%s:%s'%(i,get_res[i]))
+        if i == 'value':
+            for n in get_res[i]:
+                print(n)
+
+
 
 if __name__ == '__main__':
-
-    od_filesList()
+    od_filesList(1)
