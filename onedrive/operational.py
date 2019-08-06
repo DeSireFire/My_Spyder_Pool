@@ -45,8 +45,39 @@ def od_filesList(od_type,path=''):
         if i == 'value':
             for n in get_res[i]:
                 print(n)
+    return get_res
 
+
+def folder_create(id, path, fileName):
+    if path:
+        # parent_id = models.mongodb_find_parent_id(id, path)
+        parent_id = 'root'
+        url = app_url + '/v1.0/me/drive/items/{}/children'.format(parent_id)
+    else:
+        url = app_url + '/v1.0/me/drive/root/children'
+    headers = {'Authorization': 'bearer {}'.format(info["access_token"]), 'Content-Type': 'application/json'}
+    payload = {
+        "name": fileName,
+        "folder": {},
+        "@microsoft.graph.conflictBehavior": "rename"
+    }
+    get_res = requests.post(url, headers=headers, data=json.dumps(payload))
+    get_res = json.loads(get_res.text)
+    print(get_res)
+    for i in get_res:
+        print('%s:%s'%(i,get_res[i]))
+        if i == 'value':
+            for n in get_res[i]:
+                print(n)
+    # return get_res
+    # if 'error' in get_res.keys():
+    #     flush_token(info["refresh_token"])
+    #     return folder_create(id, path, fileName)
+    # else:
+    #     return {'code': True, 'msg': '成功', 'data':''}
 
 
 if __name__ == '__main__':
-    od_filesList(1)
+    # od_filesList(1)
+    flush_token(info["refresh_token"])
+    folder_create(1,'','wori')
