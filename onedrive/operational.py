@@ -55,7 +55,8 @@ def folder_create(id, path, fileName):
         url = app_url + '/v1.0/me/drive/items/{}/children'.format(parent_id)
     else:
         url = app_url + '/v1.0/me/drive/root/children'
-    headers = {'Authorization': 'bearer {}'.format(info["access_token"]), 'Content-Type': 'application/json'}
+    temp = flush_token(info["refresh_token"])
+    headers = {'Authorization': 'bearer {}'.format(temp["access_token"]), 'Content-Type': 'application/json'}
     payload = {
         "name": fileName,
         "folder": {},
@@ -79,5 +80,5 @@ def folder_create(id, path, fileName):
 
 if __name__ == '__main__':
     # od_filesList(1)
-    flush_token(info["refresh_token"])
+
     folder_create(1,'','wori')

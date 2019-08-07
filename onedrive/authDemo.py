@@ -65,6 +65,20 @@ def flush_token(refresh_token):
     print(type(json.loads(req.text)))
     return json.loads(req.text)
 
+def flush_oken(id):
+    redirect_url = "https://127.0.0.1/auth"
+    ReFreshData = 'client_id={client_id}&redirect_uri={redirect_uri}&client_secret={client_secret}&refresh_token={refresh_token}&grant_type=refresh_token'
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    data = ReFreshData.format(client_id = info['app_id'], redirect_uri = redirect_url, client_secret = info['app_secret'],
+                              refresh_token = info["refresh_token"])
+    if True == 1:
+        url = BaseAuthUrl + '/common/oauth2/v2.0/token'
+    # else:
+    #     url = config.ChinaAuthUrl + '/common/oauth2/token'
+    #     data = "{}&resource=https://{}-my.sharepoint.cn/".format(data, data_list.other)
+    res = requests.post(url, data=data, headers=headers)
+    return res.text
+
 if __name__ == '__main__':
     print(authorize_url)
     print(token_url)
