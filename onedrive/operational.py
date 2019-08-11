@@ -19,7 +19,7 @@ from onedrive.sec import *
 #     print(type(json.loads(req.text)))
 #     return json.loads(req.text)
 
-def od_filesList(info,od_type,path=''):
+def od_filesList(client,od_type,path=''):
     '''
     文件列表查询
     :param od_type: 布尔，onedrive 类型
@@ -27,7 +27,7 @@ def od_filesList(info,od_type,path=''):
     :return:
     '''
     app_url = "https://graph.microsoft.com"
-    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(info["access_token"])}
+    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(client["access_token"])}
     if od_type:
         app_url = app_url+"/v1.0/me/drive"
     # else:
@@ -48,15 +48,17 @@ def od_filesList(info,od_type,path=''):
     return get_res
 
 
-def folder_create(id, path, fileName):
+def folder_create(client, path, fileName):
     if path:
         # parent_id = models.mongodb_find_parent_id(id, path)
         parent_id = 'root'
         url = app_url + '/v1.0/me/drive/items/{}/children'.format(parent_id)
     else:
         url = app_url + '/v1.0/me/drive/root/children'
-    temp = flush_token(info["refresh_token"])
-    headers = {'Authorization': 'bearer {}'.format(temp["access_token"]), 'Content-Type': 'application/json'}
+
+    # temp = flush_token(info["refresh_token"])
+
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"]), 'Content-Type': 'application/json'}
     payload = {
         "name": fileName,
         "folder": {},
@@ -77,9 +79,16 @@ def folder_create(id, path, fileName):
     # else:
     #     return {'code': True, 'msg': '成功', 'data':''}
 
-def rename_files(id, fileid, new_name):
+def rename_files(client, fileid, new_name):
+    '''
+
+    :param id:
+    :param fileid:
+    :param new_name:
+    :return:
+    '''
     url = app_url + '/v1.0/me/drive/items/{}'.format(fileid)
-    headers = {'Authorization': 'bearer {}'.format(id["access_token"]), 'Content-Type': 'application/json'}
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"]), 'Content-Type': 'application/json'}
     payload = {
         "name": new_name
     }
@@ -92,14 +101,25 @@ def rename_files(id, fileid, new_name):
     # else:
     #     return {'code': True, 'msg': '成功', 'data':''}
 
-
+def delete_files(client, fileid):
+    url = app_url + '/v1.0/me/drive/items/{}'.format(fileid)
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"]), 'Content-Type': 'application/json'}
+    get_res = requests.delete(url, headers=headers)
+    print(get_res)
+    # if get_res.status_code == 204:
+    #     return {'code': True, 'msg': '成功', 'data':''}
+    # else:
+    #     common.reacquireToken(id)
+    #     return delete_files(id, fileid)
 
 if __name__ == '__main__':
-    pass
-    # temp = flush_token(info["refresh_token"])
+    # pass
+    temp = flush_token(info["refresh_token"])
 
-    # flist = od_filesList(temp,1)
+    flist = od_filesList(temp,1)
 
     # folder_create(1,'','wori')
 
     # rename_files(temp,flist['value'][1]['id'],'rename2')
+
+    delete_files(temp,flist['value'][1]['id'])
