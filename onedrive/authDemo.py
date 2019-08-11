@@ -79,6 +79,8 @@ def flush_oken(id):
     res = requests.post(url, data=data, headers=headers)
     return res.text
 
+
+
 if __name__ == '__main__':
     print(authorize_url)
     print(token_url)
