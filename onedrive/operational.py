@@ -81,9 +81,8 @@ def folder_create(client, path, fileName):
 
 def rename_files(client, fileid, new_name):
     '''
-
-    :param id:
-    :param fileid:
+    重命名文件/目录
+    :param client:字典
     :param new_name:
     :return:
     '''
@@ -122,4 +121,4 @@ if __name__ == '__main__':
 
     # rename_files(temp,flist['value'][1]['id'],'rename2')
 
-    delete_files(temp,flist['value'][1]['id'])
+    # delete_files(temp,flist['value'][1]['id'])
