@@ -33,10 +33,10 @@ def od_filesList(client,od_type,path=''):
     # else:
     #     app_url = "https://{}-my.sharepoint.cn/_api/v2.0/me/drive".format(data_list.other)
     if path:
-        BaseUrl = app_url + '/root:{}:/children?expand=thumbnails'.format(path)
+        BaseUrl = app_url + '/root:/{}:/children?expand=thumbnails'.format(path)
     else:
         BaseUrl = app_url + '/root/children?expand=thumbnails'
-
+    print(BaseUrl)
     get_res = requests.get(BaseUrl, headers=headers, timeout=30)
     get_res = json.loads(get_res.text)
     print(get_res)
@@ -113,9 +113,11 @@ def delete_files(client, fileid):
 
 if __name__ == '__main__':
     # pass
+    import os
+    print(os.path.join('wori','wori 1').replace("\\",'/'))
     temp = flush_token(info["refresh_token"])
-
-    flist = od_filesList(temp,1)
+    #
+    flist = od_filesList(temp,1,os.path.join('wori','wori 1').replace("\\",'/'))
 
     # folder_create(1,'','wori')
 
