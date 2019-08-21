@@ -19,22 +19,17 @@ from onedrive.sec import *
 #     print(type(json.loads(req.text)))
 #     return json.loads(req.text)
 
-def od_thumbnails(client,path=''):
+def od_thumbnails(client,itemid,path=''):
     '''
     获取缩略图
+    凡是文件都可以获得缩略图，但只有图片的缩略图可以用
     :param client:
-    :param path:
+    :param itemid:文件带有的id
     :return:
     '''
     app_url = "https://graph.microsoft.com"
     headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(client["access_token"])}
-    app_url = app_url+"/v1.0/me/drive"
-    if path:
-        BaseUrl = app_url + '/root:/{}:/children'.format(path)
-    else:
-        BaseUrl = app_url + '/root/children'
-
-    get_res = requests.get(app_url+'/items/{item_id}/thumbnails/{thumb_id}/{size}'.format(item_id='A292B424BBE0C719!122',thumb_id='0',size='large'), headers=headers, timeout=30)
+    get_res = requests.get(app_url+'/items/{item_id}/thumbnails/{thumb_id}/{size}'.format(item_id=itemid,thumb_id='0',size='large'), headers=headers, timeout=30)
     get_res = json.loads(get_res.text)
     print(get_res)
 
@@ -145,5 +140,5 @@ if __name__ == '__main__':
     # rename_files(temp,flist['value'][1]['id'],'rename2')
 
     # delete_files(temp,flist['value'][1]['id'])
-
-    od_thumbnails(temp,'TIM图片20190728215728.jpg')
+    for i in flist['value']:
+        od_thumbnails(temp,i['id'],'')
