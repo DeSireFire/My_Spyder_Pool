@@ -19,6 +19,26 @@ from onedrive.sec import *
 #     print(type(json.loads(req.text)))
 #     return json.loads(req.text)
 
+def od_thumbnails(client,path=''):
+    '''
+    获取缩略图
+    :param client:
+    :param path:
+    :return:
+    '''
+    app_url = "https://graph.microsoft.com"
+    headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(client["access_token"])}
+    app_url = app_url+"/v1.0/me/drive"
+    if path:
+        BaseUrl = app_url + '/root:/{}:/children'.format(path)
+    else:
+        BaseUrl = app_url + '/root/children'
+
+    get_res = requests.get(app_url+'/items/{item_id}/thumbnails/{thumb_id}/{size}'.format(item_id='A292B424BBE0C719!122',thumb_id='0',size='large'), headers=headers, timeout=30)
+    get_res = json.loads(get_res.text)
+    print(get_res)
+
+
 def od_filesList(client,od_type,path=''):
     '''
     文件列表查询
@@ -114,13 +134,16 @@ def delete_files(client, fileid):
 if __name__ == '__main__':
     # pass
     import os
-    print(os.path.join('wori','wori 1').replace("\\",'/'))
+    # print(os.path.join('wori','wori 1').replace("\\",'/'))
     temp = flush_token(info["refresh_token"])
     #
-    flist = od_filesList(temp,1,os.path.join('wori','wori 1').replace("\\",'/'))
+    # flist = od_filesList(temp,1,os.path.join('wori','wori 1').replace("\\",'/'))
+    flist = od_filesList(temp,1,'')
 
     # folder_create(1,'','wori')
 
     # rename_files(temp,flist['value'][1]['id'],'rename2')
 
     # delete_files(temp,flist['value'][1]['id'])
+
+    od_thumbnails(temp,'TIM图片20190728215728.jpg')
