@@ -3,9 +3,18 @@ import requests,json
 from onedrive.authDemo import flush_token,oauthDict
 from onedrive.sec import *
 
-def updater():
-    '''更新上传已有项目'''
-    pass
+def updater(client,fileid):
+    '''更新上传已有项目
+    PUT /me/drive/items/{item-id}/content
+    '''
+    fileName = 'test.txt'
+    url = app_url + '/v1.0/me/drive/items/{}/content'.format(fileid)
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"])}
+    pull_res = requests.put(url, headers=headers, data=open(fileName, 'rb'))
+    pull_res = json.loads(pull_res.text)
+    print(pull_res)
+
+
 
 def uploader(client):
     '''上传新项目
@@ -19,7 +28,7 @@ def uploader(client):
     Content-Type: text/plain
 
     '''
-    fileName = 'TIM图片20190825002525.jpg'
+    fileName = 'test.txt'
     url = app_url + '/v1.0/me/drive/items/root:/{}:/content'.format(fileName)
     print(url)
     headers = {'Authorization': 'bearer {}'.format(client["access_token"])}
@@ -153,4 +162,5 @@ if __name__ == '__main__':
     # for i in flist['value']:
     #     od_thumbnails(temp,i['id'],'')
 
-    uploader(temp)
+    # uploader(temp)
+    updater(temp,'A292B424BBE0C719!155')
