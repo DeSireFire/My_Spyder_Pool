@@ -3,21 +3,29 @@ import requests,json
 from onedrive.authDemo import flush_token,oauthDict
 from onedrive.sec import *
 
-# def uploader():
-#     headers = {
-#         'Authorization': 'bearer %s'%info['refresh_token']
-#     }
-#     data = {
-#         "name": "New Folder",
-#         "folder": {},
-#         "@microsoft.graph.conflictBehavior": "rename"
-#     }
-#     req = requests.post('https://api.onedrive.com/v1.0/me/drive/root/children',json=data,headers = headers)
-#     # req = requests.post('https://graph.microsoft.com/v1.0/me/drive/root/children',json=data,headers = headers)
-#     # req = requests.put('/me/drive/root:/FolderA/FileB.txt:/content',data=data)
-#     print(json.loads(req.text))
-#     print(type(json.loads(req.text)))
-#     return json.loads(req.text)
+def updater():
+    '''更新上传已有项目'''
+    pass
+
+def uploader(client):
+    '''上传新项目
+    PUT /me/drive/items/{parent-id}:/{filename}:/content
+
+    PUT /me/drive/root:/FolderA/FileB.txt:/content??
+    两者都可以
+
+
+    坑逼微软api，你奶奶的,↓根本不用写好不
+    Content-Type: text/plain
+
+    '''
+    fileName = 'TIM图片20190825002525.jpg'
+    url = app_url + '/v1.0/me/drive/items/root:/{}:/content'.format(fileName)
+    print(url)
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"])}
+    pull_res = requests.put(url, headers=headers, data=open(fileName, 'rb'))
+    pull_res = json.loads(pull_res.text)
+    print(pull_res)
 
 def od_thumbnails(client,itemid,path=''):
     '''
@@ -126,19 +134,23 @@ def delete_files(client, fileid):
     #     common.reacquireToken(id)
     #     return delete_files(id, fileid)
 
+
+
 if __name__ == '__main__':
     # pass
     import os
     # print(os.path.join('wori','wori 1').replace("\\",'/'))
     temp = flush_token(info["refresh_token"])
-    #
+
     # flist = od_filesList(temp,1,os.path.join('wori','wori 1').replace("\\",'/'))
-    flist = od_filesList(temp,1,'')
+    # flist = od_filesList(temp,1,'')
 
     # folder_create(1,'','wori')
 
     # rename_files(temp,flist['value'][1]['id'],'rename2')
 
     # delete_files(temp,flist['value'][1]['id'])
-    for i in flist['value']:
-        od_thumbnails(temp,i['id'],'')
+    # for i in flist['value']:
+    #     od_thumbnails(temp,i['id'],'')
+
+    uploader(temp)
