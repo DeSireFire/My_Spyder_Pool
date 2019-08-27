@@ -94,17 +94,15 @@ def uploader_fileSlice(filePath):
     :return:
     '''
     import os.path
-    fileSize = os.path.getsize(filePath)    # 获取文件大小
-    fileRuler = 10485760    # 10MB 尺
+    # fileSize = os.path.getsize(filePath)    # 获取文件大小
+    # fileRuler = 10485760    # 10MB 尺
+    fileSize = 2078    # 获取文件大小
+    fileRuler = 128    # 10MB 尺
 
-    print(fileSize//fileRuler)
-    print(fileSize%fileRuler)
-    alist = []
-    for i in range(0, 2048, 128):
-        alist.append([i, i + 128])
-        print([i, i + 128, 128])
-        print('bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=i, endPoint=i+127, fullLen=fileSize))
-
+    alist = ['bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=i, endPoint=i+fileRuler-1, fullLen=fileSize) for i in range(0, 2048, 128)]
+    alist.append('bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=fileSize-fileSize%fileRuler, endPoint=fileSize-1, fullLen=fileSize))
+    for i in alist:
+        print(i)
     print([fileSize-fileSize%fileRuler, fileSize,fileSize%fileRuler])
     print(len(alist))
 
