@@ -14,7 +14,7 @@ def updater(client,fileid):
     pull_res = json.loads(pull_res.text)
     print(pull_res)
 
-def uploader(client):
+def small_uploader(client):
     '''上传新项目
     PUT /me/drive/items/{parent-id}:/{filename}:/content
 
@@ -34,39 +34,7 @@ def uploader(client):
     pull_res = json.loads(pull_res.text)
     print(pull_res)
 
-def uploader_creatSession(client):
-    '''创建上传会话
-    POST /drives/{driveId}/items/{itemId}/createUploadSession
-    POST /groups/{groupId}/drive/items/{itemId}/createUploadSession
-    POST /me/drive/items/{itemId}/createUploadSession
-    POST /sites/{siteId}/drive/items/{itemId}/createUploadSession
-    POST /users/{userId}/drive/items/{itemId}/createUploadSession
-
-    /drive/root:/{item-path}:/createUploadSession
-
-    :param client:
-    :return:
-    '''
-    fileName = 'test.txt'
-    remotePath = '233'
-    if remotePath == "None":
-        remotePath = "/"
-    url = app_url + '/v1.0/me/drive/root:/{}/{}:/createUploadSession'.format(remotePath,fileName)
-    headers = {'Authorization': 'bearer {}'.format(client["access_token"]), 'Content-Type': 'application/json'}
-    data = {
-        "item": {
-            "@microsoft.graph.conflictBehavior": "fail",
-        }
-    }
-    pull_res = requests.post(url, headers=headers, data=json.dumps(data))
-    pull_res = json.loads(pull_res.text)
-    if pull_res.status_code == 409:
-        return False
-    else:
-        return pull_res
-
-
-def uploaderBig(client,upUrl):
+def big_uploader_demo(client,upUrl):
     '''大文件上传
     :return:
     '''
@@ -99,6 +67,80 @@ def uploaderBig(client,upUrl):
     pull_res = json.loads(pull_res.text)
     print(pull_res)
 
+def big_uploader(client,filePath):
+    '''
+    上传大文件
+    :param filePath:上传的目标文件完整路径
+    '''
+    # 创建上传会话，获取上传URL
+    sessionInfo = uploader_creatSession(client)
+
+    # 目标文件分段
+
+
+
+
+
+def uploader_creatSession(client):
+    '''
+    创建上传会话，获取上传URL
+    '''
+    pass
+
+def uploader_fileSlice(filePath):
+    '''
+    文件二进制切片
+    :param filePath:
+    :return:
+    '''
+    import os.path
+    fileSize = os.path.getsize(filePath)    # 获取文件大小
+    fileRuler = 10485760    # 10MB 尺
+
+    print(fileSize//fileRuler)
+    print(fileSize%fileRuler)
+    alist = []
+    for i in range(0, 2048, 128):
+        alist.append([i, i + 128])
+        print([i, i + 128, 128])
+        print('bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=i, endPoint=i+127, fullLen=fileSize))
+
+    print([fileSize-fileSize%fileRuler, fileSize,fileSize%fileRuler])
+    print(len(alist))
+
+
+def uploader_creatSession_demo(client):
+    '''创建上传会话
+    POST /drives/{driveId}/items/{itemId}/createUploadSession
+    POST /groups/{groupId}/drive/items/{itemId}/createUploadSession
+    POST /me/drive/items/{itemId}/createUploadSession
+    POST /sites/{siteId}/drive/items/{itemId}/createUploadSession
+    POST /users/{userId}/drive/items/{itemId}/createUploadSession
+
+    /drive/root:/{item-path}:/createUploadSession
+
+    :param client:
+    :return:
+    '''
+    fileName = 'test.txt'
+    remotePath = '233'
+    if remotePath == "None":
+        remotePath = "/"
+    url = app_url + '/v1.0/me/drive/root:/{}/{}:/createUploadSession'.format(remotePath,fileName)
+    headers = {'Authorization': 'bearer {}'.format(client["access_token"]), 'Content-Type': 'application/json'}
+    data = {
+        "item": {
+            "@microsoft.graph.conflictBehavior": "fail",
+        }
+    }
+    pull_res = requests.post(url, headers=headers, data=json.dumps(data))
+    pull_res = json.loads(pull_res.text)
+    if pull_res.status_code == 409:
+        return False
+    else:
+        return pull_res
+
+
 def delup(client,upURL):
     '''
     DELETE https://sn3302.up.1drv.com/up/fe6987415ace7X4e1eF866337
@@ -111,9 +153,11 @@ def delup(client,upURL):
 
 
 if __name__ == '__main__':
-    temp = flush_token(info["refresh_token"])
+    # temp = flush_token(info["refresh_token"])
     # # pull_res = uploader_creatSession(temp)
     # pull_res = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.uploadSession', 'expirationDateTime': '2019-09-03T06:47:03.857Z', 'nextExpectedRanges': ['0-'], 'uploadUrl': 'https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExNTQiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC50eHQifQ/4mJpullRYS6xp0jTI7r69qC7SMOmzNZYXafZt5SP75IaLOAfkeNWxXHNQqQpC1JkzbnsBahzUolymU5f8W8muz_5MogIeVwp3XxO65qNAHuCw/eyJuYW1lIjoidGVzdC50eHQiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wfbKrWZRCD82qjclyFHcm-0qE0PMeUQxaG0MVKY6x_iEcZARPnn3dehcg73SXEMO3m9_eLCvW-4TC90B2cEpUdHI_X6emHkPgfcCPvlBco7rUCvmR5C8b5DtQ3oqL_VfYRbPGK1hevstVDpQYb9YtCfbZhB5P8GHy5JTTAVoBRJ-MGjvvO9F309eUj8JFuxeADxlMkCUFuCkIC-sZKDJwS7W0j3LPODMIw5GkBSDl9NqN8gnnkEVbW-wT0zzsceOrTItZocqfTX4GFemezWx1Tvrnn2CNcx9rkHEZVW3CtTm2FGpu24e2cWk9vgU4DWRySrN6pgz069bOc1zvkCSAA8ebQdM7Vl72psH2CAhUBgC-PtiLQt8DTZcRH0x8v5fWtrpn_YWN86R1tduKtYs81C5RJMNcMJ0DyePuiE_U49iidnr03oDp9jzX2JvM5PDFAbJzhPDAE7aXf254rBRiblh3rgB13uD4PfgvCGBF57U166GGk5FP3zhNMDeh0rsuAiJaS81HwfpM7EfK-7rWWWtFuCxlsY2CqnvXXQQTwUk'}
     # delup(temp, pull_res['uploadUrl'])
 
-    uploaderBig(temp,'https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExNTQiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC50eHQifQ/4mJpullRYS6xp0jTI7r69qC7SMOmzNZYXafZt5SP75IaLOAfkeNWxXHNQqQpC1JkzbnsBahzUolymU5f8W8muz_5MogIeVwp3XxO65qNAHuCw/eyJuYW1lIjoidGVzdC50eHQiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wfbKrWZRCD82qjclyFHcm-0qE0PMeUQxaG0MVKY6x_iEcZARPnn3dehcg73SXEMO3m9_eLCvW-4TC90B2cEpUdHI_X6emHkPgfcCPvlBco7rUCvmR5C8b5DtQ3oqL_VfYRbPGK1hevstVDpQYb9YtCfbZhB5P8GHy5JTTAVoBRJ-MGjvvO9F309eUj8JFuxeADxlMkCUFuCkIC-sZKDJwS7W0j3LPODMIw5GkBSDl9NqN8gnnkEVbW-wT0zzsceOrTItZocqfTX4GFemezWx1Tvrnn2CNcx9rkHEZVW3CtTm2FGpu24e2cWk9vgU4DWRySrN6pgz069bOc1zvkCSAA8ebQdM7Vl72psH2CAhUBgC-PtiLQt8DTZcRH0x8v5fWtrpn_YWN86R1tduKtYs81C5RJMNcMJ0DyePuiE_U49iidnr03oDp9jzX2JvM5PDFAbJzhPDAE7aXf254rBRiblh3rgB13uD4PfgvCGBF57U166GGk5FP3zhNMDeh0rsuAiJaS81HwfpM7EfK-7rWWWtFuCxlsY2CqnvXXQQTwUk')
+    # uploaderBig(temp,'https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExNTQiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC50eHQifQ/4mJpullRYS6xp0jTI7r69qC7SMOmzNZYXafZt5SP75IaLOAfkeNWxXHNQqQpC1JkzbnsBahzUolymU5f8W8muz_5MogIeVwp3XxO65qNAHuCw/eyJuYW1lIjoidGVzdC50eHQiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wfbKrWZRCD82qjclyFHcm-0qE0PMeUQxaG0MVKY6x_iEcZARPnn3dehcg73SXEMO3m9_eLCvW-4TC90B2cEpUdHI_X6emHkPgfcCPvlBco7rUCvmR5C8b5DtQ3oqL_VfYRbPGK1hevstVDpQYb9YtCfbZhB5P8GHy5JTTAVoBRJ-MGjvvO9F309eUj8JFuxeADxlMkCUFuCkIC-sZKDJwS7W0j3LPODMIw5GkBSDl9NqN8gnnkEVbW-wT0zzsceOrTItZocqfTX4GFemezWx1Tvrnn2CNcx9rkHEZVW3CtTm2FGpu24e2cWk9vgU4DWRySrN6pgz069bOc1zvkCSAA8ebQdM7Vl72psH2CAhUBgC-PtiLQt8DTZcRH0x8v5fWtrpn_YWN86R1tduKtYs81C5RJMNcMJ0DyePuiE_U49iidnr03oDp9jzX2JvM5PDFAbJzhPDAE7aXf254rBRiblh3rgB13uD4PfgvCGBF57U166GGk5FP3zhNMDeh0rsuAiJaS81HwfpM7EfK-7rWWWtFuCxlsY2CqnvXXQQTwUk')
+
+    uploader_fileSlice('233')
