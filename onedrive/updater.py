@@ -76,9 +76,33 @@ def big_uploader(client,filePath):
     sessionInfo = uploader_creatSession(client)
 
     # 目标文件分段
+    #todo fileRuler可以写活而不用固定长度
+    import os.path
+    fileSize = os.path.getsize(filePath)    # 获取文件大小
+    fileRuler = 10485760    # 10MB 尺
+    listSlice = [[i, i + fileRuler - 1, fileRuler] for i in range(0, fileSize, fileRuler)] # 生成切好的分段组数
+    listSlice.append([fileSize-fileSize%fileRuler, fileSize-1,fileSize%fileRuler])  # 添加末尾剩余的文件片段
 
+    # 分段上传的头部base
+    headers = {
+        'Content-Type': 'application/octet-stream',
+        'Content-Length': '',   # 上传片段的长度
+        'Content-Range': ''  # 下一次上传，endPoint等于setPoint+新读取的片段长度-1
+    }
 
-
+    # 遍历分段上传
+    for i in listSlice:
+        headers['Content-Length'] = str(i[2])
+        headers['Content-Range'] = 'bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=i[0],endPoint=i[1],fullLen=fileSize)    # 下一次上传，endPoint等于setPoint+新读取的片段长度-1
+        # 上传
+        uploaderPart = requests.put(sessionInfo['uploadUrl'], headers=headers, data=uploader_fileSlice(filePath,i[0],i[2]))
+        if uploaderPart.status_code in [200,202,204]:
+            uploaderPart = json.loads(uploaderPart.text)
+            return {"percent": '{:.0%}'.format(int(uploaderPart['nextExpectedRanges'][0].split('-')[0])/fileSize)}
+        else:
+            print('发生错误')
+            print(json.loads(uploaderPart.text))
+            print(uploaderPart.status_code)
 
 
 def uploader_creatSession(client):
@@ -87,24 +111,16 @@ def uploader_creatSession(client):
     '''
     pass
 
-def uploader_fileSlice(filePath):
+def uploader_fileSlice(filePath,setPoint,sliceLen):
     '''
     文件二进制切片
     :param filePath:
     :return:
     '''
-    import os.path
-    # fileSize = os.path.getsize(filePath)    # 获取文件大小
-    # fileRuler = 10485760    # 10MB 尺
-    fileSize = 2078    # 获取文件大小
-    fileRuler = 128    # 10MB 尺
-
-    alist = ['bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=i, endPoint=i+fileRuler-1, fullLen=fileSize) for i in range(0, 2048, 128)]
-    alist.append('bytes {setPoint}-{endPoint}/{fullLen}'.format(setPoint=fileSize-fileSize%fileRuler, endPoint=fileSize-1, fullLen=fileSize))
-    for i in alist:
-        print(i)
-    print([fileSize-fileSize%fileRuler, fileSize,fileSize%fileRuler])
-    print(len(alist))
+    with open(filePath, 'rb') as f:
+        f.seek(int(setPoint))
+        content = f.read(sliceLen)
+    return content
 
 
 def uploader_creatSession_demo(client):
@@ -158,4 +174,4 @@ if __name__ == '__main__':
 
     # uploaderBig(temp,'https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExNTQiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC50eHQifQ/4mJpullRYS6xp0jTI7r69qC7SMOmzNZYXafZt5SP75IaLOAfkeNWxXHNQqQpC1JkzbnsBahzUolymU5f8W8muz_5MogIeVwp3XxO65qNAHuCw/eyJuYW1lIjoidGVzdC50eHQiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wfbKrWZRCD82qjclyFHcm-0qE0PMeUQxaG0MVKY6x_iEcZARPnn3dehcg73SXEMO3m9_eLCvW-4TC90B2cEpUdHI_X6emHkPgfcCPvlBco7rUCvmR5C8b5DtQ3oqL_VfYRbPGK1hevstVDpQYb9YtCfbZhB5P8GHy5JTTAVoBRJ-MGjvvO9F309eUj8JFuxeADxlMkCUFuCkIC-sZKDJwS7W0j3LPODMIw5GkBSDl9NqN8gnnkEVbW-wT0zzsceOrTItZocqfTX4GFemezWx1Tvrnn2CNcx9rkHEZVW3CtTm2FGpu24e2cWk9vgU4DWRySrN6pgz069bOc1zvkCSAA8ebQdM7Vl72psH2CAhUBgC-PtiLQt8DTZcRH0x8v5fWtrpn_YWN86R1tduKtYs81C5RJMNcMJ0DyePuiE_U49iidnr03oDp9jzX2JvM5PDFAbJzhPDAE7aXf254rBRiblh3rgB13uD4PfgvCGBF57U166GGk5FP3zhNMDeh0rsuAiJaS81HwfpM7EfK-7rWWWtFuCxlsY2CqnvXXQQTwUk')
 
-    uploader_fileSlice('233')
+    uploader_fileSlice('test.txt',233,233)
