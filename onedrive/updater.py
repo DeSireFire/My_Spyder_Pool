@@ -2,19 +2,37 @@ import requests,json
 from onedrive.authDemo import flush_token,oauthDict
 from onedrive.sec import *
 
+def main_uploader(client,filePath,remotePath='/',fileid=False):
+    '''上传文件，总函数
+    :param filePath:str,上传的目标文件在本地的完整路径
+    :param remotePath:str,远程网盘要放的路径
+    '''
+    import os.path
 
-def updater(client,fileid):
+    # 如果存在文件id,则使用文件更新已有项目
+    if fileid:
+        return updater(client, fileid,filePath)
+
+    # 小于8MB用小文件上传
+    if os.path.getsize(filePath) < 8388608:
+        return small_uploader(client,os.path.basename(filePath),remotePath)
+    else:   # 大于8mb用大文件上传
+        return big_uploader(client,os.path.basename(filePath),remotePath)
+
+
+
+
+def updater(client,fileid,filePath):
     '''更新上传已有项目
     PUT /me/drive/items/{item-id}/content
     '''
-    fileName = 'test.txt'
     url = app_url + '/v1.0/me/drive/items/{}/content'.format(fileid)
     headers = {'Authorization': 'bearer {}'.format(client["access_token"])}
-    pull_res = requests.put(url, headers=headers, data=open(fileName, 'rb'))
+    pull_res = requests.put(url, headers=headers, data=open(filePath, 'rb'))
     pull_res = json.loads(pull_res.text)
-    print(pull_res)
+    return pull_res
 
-def small_uploader(client):
+def small_uploader(client,fileName,remotePath):
     '''上传新项目
     PUT /me/drive/items/{parent-id}:/{filename}:/content
 
@@ -26,13 +44,11 @@ def small_uploader(client):
     Content-Type: text/plain
 
     '''
-    fileName = 'test.txt'
     url = app_url + '/v1.0/me/drive/items/root:/{}:/content'.format(fileName)
-    print(url)
     headers = {'Authorization': 'bearer {}'.format(client["access_token"])}
     pull_res = requests.put(url, headers=headers, data=open(fileName, 'rb'))
     pull_res = json.loads(pull_res.text)
-    print(pull_res)
+    return pull_res
 
 def big_uploader(client,filePath,remotePath):
     '''
@@ -204,9 +220,6 @@ def big_uploader_demo(client,upUrl):
 if __name__ == '__main__':
     temp = flush_token(info["refresh_token"])
     # # pull_res = uploader_creatSession(temp)
-    # pull_res = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.uploadSession', 'expirationDateTime': '2019-09-03T06:47:03.857Z', 'nextExpectedRanges': ['0-'], 'uploadUrl': 'https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExNTQiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC50eHQifQ/4mJpullRYS6xp0jTI7r69qC7SMOmzNZYXafZt5SP75IaLOAfkeNWxXHNQqQpC1JkzbnsBahzUolymU5f8W8muz_5MogIeVwp3XxO65qNAHuCw/eyJuYW1lIjoidGVzdC50eHQiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wfbKrWZRCD82qjclyFHcm-0qE0PMeUQxaG0MVKY6x_iEcZARPnn3dehcg73SXEMO3m9_eLCvW-4TC90B2cEpUdHI_X6emHkPgfcCPvlBco7rUCvmR5C8b5DtQ3oqL_VfYRbPGK1hevstVDpQYb9YtCfbZhB5P8GHy5JTTAVoBRJ-MGjvvO9F309eUj8JFuxeADxlMkCUFuCkIC-sZKDJwS7W0j3LPODMIw5GkBSDl9NqN8gnnkEVbW-wT0zzsceOrTItZocqfTX4GFemezWx1Tvrnn2CNcx9rkHEZVW3CtTm2FGpu24e2cWk9vgU4DWRySrN6pgz069bOc1zvkCSAA8ebQdM7Vl72psH2CAhUBgC-PtiLQt8DTZcRH0x8v5fWtrpn_YWN86R1tduKtYs81C5RJMNcMJ0DyePuiE_U49iidnr03oDp9jzX2JvM5PDFAbJzhPDAE7aXf254rBRiblh3rgB13uD4PfgvCGBF57U166GGk5FP3zhNMDeh0rsuAiJaS81HwfpM7EfK-7rWWWtFuCxlsY2CqnvXXQQTwUk'}
-    # del_uploader("https://api.onedrive.com/rup/a292b424bbe0c719/eyJSZXNvdXJjZUlEIjoiQTI5MkI0MjRCQkUwQzcxOSExMDMiLCJSZWxhdGlvbnNoaXBOYW1lIjoidGVzdC56aXAifQ/4mIQ2oPmMfRyQMDThAmabz9xEylkaMWXYZzXwA8dXOAhAUN7xY69_ZdYjkGhqpKPuLeJG57R3ip1iVuBut3cL0gdy4ep6ocWgZGNE_Hm5vQYE/eyJuYW1lIjoidGVzdC56aXAiLCJAbmFtZS5jb25mbGljdEJlaGF2aW9yIjoiZmFpbCJ9/4wEtH2bc6PNBIBv64vcE_gCyO36s3MMeOeSlP-CmgrJ6cWP5diQl2UMr8s6E0u6F7s_PPuIeNYZ6CL8td3XaZZJubzG8QznGgV2QMatcq2ZeC2sOBlzLRdDyo8tz5ikT6DgJTl3YnsJOBPalGrdGqzlK7fmV5Unfs10g8HfPek5U5mnlUyOYTt8VocdD2s60II4Mf7zHjCyAlXJZb3fSrENEWhaXjIh1d2WwewNrd1ATEYvmD-yvCU9-gVFvrNkr3L7xZ7qzkNw7RIO491fIal4Mwn21rzpv9z2b8mS1HZr8XTMKIi7Q1qy0Lf5gF0sUmapn7xAS9KT39ocM6wVLFvLLkX1dDix9Fe8yqbAInoG-IFsVQDid_7HRn_scpNIe91LXIONJA2xT5oPMqaaBCaaK1YdpZyt6eEZfm_wpv36Rfrt8w1dgzl9WaLDkohNYJO9Jh1sBVc1oZleLztbZk8qrVdm4V3sISkI0qK0E0pn-AQvrGj9pU318GIeT8xxqxPyEtktpqvIi2r1xk-pBBn9Px0QImpPgkV9KPGjEvp4CM")
-
     # uploader_fileSlice('test.txt',233,233)
 
     big_uploader(temp,'test.zip','/')
