@@ -19,6 +19,15 @@ def odf(client):
     for i in get_res['value']:
         print(i)
 
+
 if __name__ == '__main__':
     temp = flush_token(info["refresh_token"])
     odf(temp)
+
+    # f = open("test.txt", "r")
+    # TEMP = json.loads(f.read().replace('\x20',' ').replace(r'\x2',' '))
+    # # TEMP = json.loads(json.dumps(f.read()))
+    # print(TEMP)
+    # print(type(TEMP))
+    #
+    # print(TEMP['address']['address1'])

@@ -1,11 +1,34 @@
-对不起..我错了，但是我不改..
-四舍五入就是一个...
-你骂我，你为什么骂我，你不许骂我..
-36D..
-铃果desu，天才desu...
-27+23=50
-口吐芬芳..
-只有自甘沉沦的人才会真正衰老，而我永远年轻
-
-
-我在这里加入修改！
+{
+"accountId": "annapolisvolvovcna",
+"dealerCodes": {"dealertrack-post":"annapolisvolvovcna","dtid":"14150","dt-dr-profile":"annapolisvolvovcna","volvo":"75040","at-kbb":"1153773"},
+"address": {"address1":"333 Busch's Frontage Rd.","address2":"","city":"Annapolis","postalCode":"21409-5534","state":"MD","country":"US"},
+"bodyStyle": "SUV",
+"certified": "false",
+"cityFuelEfficiency": "20",
+"classification": "primary",
+"driveLine": "All\x2Dwheel\x20Drive",
+"doors": "4 door",
+"engine": "I\x2D4\x20cyl",
+"exteriorColor": "Osmium\x20Gray",
+"features": [],
+"fuelType": "Premium\x20Unleaded",
+"highwayFuelEfficiency": "27",
+"interiorColor": "Charcoal",
+"internetPrice": "47569",
+"inventoryType": "new",
+"make": "Volvo",
+"model": "XC60",
+"modelCode": "XC60T5MAWD",
+"modelYear": "2020",
+"msrp": "49490",
+"newOrUsed": "new",
+"odometer": "null",
+"optionCodes": "",
+"packages": [{"packageName":"Manufacturer's Suggested Retail Price (MSRP)","msrp":42450.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Manufacturer's Suggested Retail Price (MSRP)"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Premium Package","msrp":2150.0,"isEnabled":true,"includedOptions":{"":"Power Folding Rear Headrests"},"textMap":{"en_US":"Premium Package"},"includedOptionList":[{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Keyless Entry w/ Handsfree Tailgate Opening","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Blind Spot Information System (BLIS) with","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Steer Assist &amp; Cross Traffic Alert w/ Autobrake","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Front Park Assist","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Automatically Dimmed Inner &amp; Exterior Mirrors","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Power Retractable Rearview Mirrors","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Homelink &amp; Compass Integrated in Rearview Mirror","id":""}},{"type":"CUSTOM","isEnabled":true,"invoicePrice":0.0,"msrPrice":0.0,"extendedDescription":"","textMap":{"description":"Power Folding Rear Headrests","id":""}}],"extendedDescription":""},{"packageName":"Heated Rear Seats &amp; Heated Steering Whee","msrp":750.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Heated Rear Seats &amp; Heated Steering Whee"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Metallic Paint","msrp":645.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Metallic Paint"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Mud Flaps*","msrp":185.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Mud Flaps*"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Navigation System*","msrp":1200.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Navigation System*"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Protection Package*","msrp":315.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Protection Package*"},"includedOptionList":[],"extendedDescription":""},{"packageName":"19\" Alloy Wheels w/All-Season Tires","msrp":800.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"19\" Alloy Wheels w/All-Season Tires"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Destination Charge","msrp":995.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Destination Charge"},"includedOptionList":[],"extendedDescription":""},{"packageName":"Total Manufacturer's Suggested Retail Price (MSRP)","msrp":49490.0,"isEnabled":true,"includedOptions":{},"textMap":{"en_US":"Total Manufacturer's Suggested Retail Price (MSRP)"},"includedOptionList":[],"extendedDescription":""}],
+"status": "Live",
+"stockNumber": "V12445",
+"transmission": "Automatic",
+"trim": "T5\x20Momentum",
+"uuid" : "fbea81470a0e0ae840c1866f86cf1cb9",
+"vin": "YV4102RK7L1425280"
+} 
