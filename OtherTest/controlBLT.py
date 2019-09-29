@@ -20,14 +20,13 @@ def cmdRuner(comm):
 
 def getDockerID():
     # 获取docker ID
-    res = cmdRuner(r"docker ps --format '{{.ID}}\t{{.Image}}'")
-    temp = {'zsnmwy/bilibili-live-tools':[]}
+    res = cmdRuner(r"docker ps --format '{{.ID}}\t{{.Image}}\t{{.Names}}'")
+    temp = {}
     if res:
         for line in res.splitlines():
             if 'zsnmwy/bilibili-live-tools' in line:
-                # comm = 'docker stop {CONTAINER_ID}'.format(CONTAINER_ID=[line.split()[0]])
-                temp[line.split()[1]] = temp[line.split()[1]].append([line.split()[0]])
-    return temp['zsnmwy/bilibili-live-tools']
+                temp[line.split()[0]] = line.split()[2]
+    return temp
 
 
 
@@ -76,14 +75,21 @@ def choiceHandler(c):
     if c == 1:
         for user in info:   # 遍历多个用户
             for psN in range(0,user['psNum']):  # 用户多开次数
-
                 dockerComm = runBTL(user['name']+'Num%s'%psN, user['pw'])  # 构造启动docker命令
-                # dockerID = cmdRuner(dockerComm)[:12]
+                dockerID = cmdRuner(dockerComm)[:12]
     elif c == 2:
-        pass
+        idList = getDockerID()  # 获取所有有关DD抢辣条的docker进程ID
+        for idKey in idList: # 遍历id 逐一关闭。时间较长
+            comm = 'docker stop {CONTAINER_ID}'.format(CONTAINER_ID=idKey)
+            print('正在关闭 %s ...'%(idList[idKey]))
+            print('总进度: {:.2%}'.format(list(idList.keys()).index(idKey)/len(idList.keys())))
+            cmdRuner(comm)
     elif c == 3:
-        pass
+        # 格式化打印docker ps
+        print(cmdRuner(r"docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Names}}'"))
     elif c == 4:
+        pass
+    elif c == 5:
         pass
 
 
@@ -92,6 +98,8 @@ def menu():
         1:'一键启动所有DD抢辣条',
         2:'一键退出所有DD抢辣条',
         3:'显示所有在运行DD抢辣条进程',
+        4:'一键设置所有DD抢辣条定时启动',
+        5:'一键设置所有DD抢辣条定时关闭',
         0:'退出工具',
     }
     while True:
@@ -109,7 +117,7 @@ def menu():
         except:
             print('输入有误！')
 
-    if c in [1,2,3]:    # 是否退出
+    if c in [1,2,3,4,5]:    # 是否退出
         print('%s %s Start!' % (c, menuDict[c]))
         choiceHandler(c)
     else:
