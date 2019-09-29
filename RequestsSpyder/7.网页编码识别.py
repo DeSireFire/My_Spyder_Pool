@@ -8,6 +8,7 @@ res = r.content.decode(encoding,'replace')
 print(res)
 
 # 方法二
+# 其实requests里面用的就是chardet
 import chardet
 r = requests.get(url=url)
 
