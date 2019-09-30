@@ -7,28 +7,30 @@
 # @Software: PyCharm
 # @github    ：https://github.com/DeSireFire
 
-
-def cmdRuner(comm):
+## 工具函数
+def cmdRuner(comm,readList=False):
     '''
     命令执行函数
     :param comm:需要运行的命令
+    :param readList:返回结果控制，为真时 return 结果为列表类型，为假时为字符串类型
     :return: 执行命令后翻回的结果
     '''
     import os
     result = os.popen(comm)
-    return result.read()
+    if readList:
+        return result.readlines()
+    else:
+        return result.read()
 
-def getDockerID():
-    # 获取docker ID
+def getDockerName():
+    # 获取docker 容器的名字
     res = cmdRuner(r"docker ps --format '{{.ID}}\t{{.Image}}\t{{.Names}}'")
     temp = {}
     if res:
         for line in res.splitlines():
             if 'zsnmwy/bilibili-live-tools' in line:
-                temp[line.split()[0]] = line.split()[2]
+                temp[line.split()[2]] = line.split()[0]
     return temp
-
-
 
 def runBTL(userName,userPW,Backstage=True):
     '''
@@ -68,27 +70,74 @@ def crontabADD(crMins='*',crHours='*',crDays='*',crMouDays='*',crWeeks='*',yourC
     return comm
 
 def crontabFile(commList,startFile=False):
-    pass
+    # 读取crontab
+    temp = cmdRuner('crontab -l',True)
+    print(temp)
+    for ft in temp: # 筛选出宿主机原自带的crontab任务，添加到命令列表，避免执行crontab -r时是把无关的任务清除
+        if 'DDScriptNum' not in ft:
+            commList.append(ft)
 
+    # 生成新的crontab定时任务文件
+    import os
+    if startFile:   # 是生成启动任务文件是关闭任务文件呢？
+        filename = os.path.join(os.getcwd(),'ddStartcron')  # 是~
+    else:
+        filename = os.path.join(os.getcwd(), 'ddStopcron')  # 否~
 
+    # 文件存则覆盖，不存则创建
+    with open(filename,'w') as f:
+        for line in commList:
+            f.write(line+'\n')
+
+    # 检查文件是否修改成功
+    import time
+    if os.path.exists(filename):    #文件是否存在
+        info = os.stat(filename)
+        if time.time() - info.st_mtime > 60:    #修改时间是否在一分钟之内
+            return True
+
+    return False
+
+## 主操作函数
 def choiceHandler(c):
     if c == 1:
         for user in info:   # 遍历多个用户
             for psN in range(0,user['psNum']):  # 用户多开次数
-                dockerComm = runBTL(user['name']+'Num%s'%psN, user['pw'])  # 构造启动docker命令
+                dockerComm = runBTL(user['name']+'DDScriptNum%s'%psN, user['pw'])  # 构造启动docker命令
                 dockerID = cmdRuner(dockerComm)[:12]
+
+
     elif c == 2:
-        idList = getDockerID()  # 获取所有有关DD抢辣条的docker进程ID
+        idList = getDockerName()  # 获取所有有关DD抢辣条的docker进程ID
         for idKey in idList: # 遍历id 逐一关闭。时间较长
-            comm = 'docker stop {CONTAINER_ID}'.format(CONTAINER_ID=idKey)
+            comm = 'docker stop {CONTAINER_Name}'.format(CONTAINER_Name=idKey)
             print('正在关闭 %s ...'%(idList[idKey]))
             print('总进度: {:.2%}'.format(list(idList.keys()).index(idKey)/len(idList.keys())))
             cmdRuner(comm)
+
+
     elif c == 3:
         # 格式化打印docker ps
         print(cmdRuner(r"docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Names}}'"))
+
+
     elif c == 4:
-        pass
+        idList = getDockerName()  # 获取所有有关DD抢辣条的docker进程ID
+        comms = []
+        for idKey in idList: # 遍历id
+            comm = 'docker stop {CONTAINER_Name}'.format(CONTAINER_Name=idKey)
+            crontabCommStart = crontabADD(crMins='30', crHours='9', crDays='*', crMouDays='*', crWeeks='*',yourComm=comm)  # 构造定时关闭任务命令
+            comms.append(crontabCommStart)
+        if crontabFile(comms):
+            print('定时任务文件创建...OK')
+            print('查看当前已有定时任务 \n%s'%cmdRuner(r"crontab -l"))
+            print('初始化 crontab 任务..')
+            cmdRuner(r"crontab -r")
+            print('重载 crontab 任务..')
+            import os
+            cmdRuner(r"crontab %s"%(os.path.join(os.getcwd(),'ddStartcron')))
+            print('查看重载后定时任务 \n%s'%cmdRuner(r"crontab -l"))
+            print('一键设置所有DD抢辣条定时启动...OK')
     elif c == 5:
         pass
 
@@ -131,6 +180,8 @@ if __name__ == '__main__':
         'psNum':2,
     },]
     menu()
+
+
 
 # crontabCommStart = crontabADD(crMins='30', crHours='9', crDays='*', crMouDays='*', crWeeks='*',
 #                               yourComm=dockerComm)  # 构造定时启动任务命令
